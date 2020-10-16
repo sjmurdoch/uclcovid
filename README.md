@@ -10,6 +10,10 @@ The file format is not guaranteed to remain stable.
 The JSON file is also available over HTTPS, suitable for plotting on web pages, at
 [`https://sjmurdoch.github.io/uclcovid/data/covid.json`](https://sjmurdoch.github.io/uclcovid/data/covid.json).
 
+Data is only published during weekdays, with cases from Saturday to Monday being merged into the results reported on Tuesday.
+Daily cases reported on Tuesday are shared equally over Saturday, Sunday, and Monday to avoid a misleading weekly peak.
+Weekly and total cases don't need such smoothing, so data for Saturday and Sunday are simply omitted.
+
 For the latest data and important caveats on how it should be interpreted, see the [official UCL webpage](https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-potential-cases/current-confirmed-cases-covid-19).
 
 ## Code
