@@ -1,6 +1,7 @@
 import sys
 import math
 import json
+import hashlib
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
@@ -36,7 +37,7 @@ TEXT_FIELDS = {
     18: "Total cases since 28 Sept 2020 (start of Term 1)",
 }
 
-DEBUG=False
+DEBUG = True
 MONDAY = 0
 DATE_LABEL = 'date'
 DATASET_NAMES = ['staff.on', 'staff.off', 'student.on', 'student.off',
@@ -68,6 +69,7 @@ def extract_df():
     duplicates.mkdir(exist_ok=True)
     original = p / 'original'
     last_data = None
+    last_hash = None
 
     ## Data to build into PANDAS dataframe
     pd_data = []
@@ -76,6 +78,18 @@ def extract_df():
     tfh.write('<html><head><meta charset="UTF-8"></head><body>\n')
     for file in sorted(original.glob("covid-*.html")):
         debug_log("Loading from", file)
+
+        with file.open("rb") as fh:
+            hash = hashlib.sha256()
+            hash.update(fh.read())
+            file_hash = hash.hexdigest()
+
+        if file_hash == last_hash:
+            debug_log("File is a duplicate (hash)", file.name)
+            file.rename(duplicates / file.name)
+            continue
+        else:
+            last_hash = file_hash
 
         with file.open() as fh:
             file_date = datetime.strptime(file.name, "covid-%Y-%m-%dT%H-%M-%S.html").date()
@@ -100,8 +114,8 @@ def extract_df():
 
             last_data = data
         else:
-            debug_log("File is a duplicate", file.name)
-            #file.rename(duplicates / file.name)
+            debug_log("File is a duplicate (data)", file.name)
+
     tfh.write('</body></html>')
     tfh.close()
 
