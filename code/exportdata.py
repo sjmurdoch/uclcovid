@@ -37,7 +37,7 @@ TEXT_FIELDS = {
     18: "Total cases since 28 Sept 2020 (start of Term 1)",
 }
 
-DEBUG = True
+DEBUG = False
 MONDAY = 0
 DATE_LABEL = 'date'
 DATASET_NAMES = ['staff.on', 'staff.off', 'student.on', 'student.off',
@@ -136,19 +136,19 @@ def to_json(df, jsonfile):
 
 def export(df, df_smoothed):
     ## Export raw data to CSV
-    with open("../data/covid_raw.csv", "w") as csvfile:
+    with open("../data/covid_raw.csv", "w", newline='') as csvfile:
         df.to_csv(csvfile, line_terminator="\r\n")
 
     ## Export raw data to JSON
-    with open("../data/covid_raw.json", "w") as jsonfile:
+    with open("../data/covid_raw.json", "w", newline='') as jsonfile:
         to_json(df, jsonfile)
 
     ## Export smoothed data to CSV
-    with open("../data/covid.csv", "w") as csvfile:
+    with open("../data/covid.csv", "w", newline='') as csvfile:
         df_smoothed.to_csv(csvfile, line_terminator="\r\n")
 
     ## Export smoothed data to JSON
-    with open("../data/covid.json", "w") as jsonfile:
+    with open("../data/covid.json", "w", newline='') as jsonfile:
         to_json(df_smoothed, jsonfile)
 
 def add_weekend(df):
