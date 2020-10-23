@@ -74,7 +74,7 @@ def extract_df():
 
     tfh = open(p / 'original-tables.html', "w")
     tfh.write('<html><head><meta charset="UTF-8"></head><body>\n')
-    for file in original.glob("covid-*.html"):
+    for file in sorted(original.glob("covid-*.html")):
         debug_log("Loading from", file)
 
         with file.open() as fh:
