@@ -55,7 +55,7 @@ def cleanup_value(tag):
     return str(tag.string).replace("\u2020", "")
 
 def parse_file(fh):
-    soup = BeautifulSoup(fh, from_encoding="utf8")
+    soup = BeautifulSoup(fh, 'html.parser')
     table = soup.select_one('#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table')
     data = {}
     for i, tag in enumerate(table.find_all(["td","th"])):
