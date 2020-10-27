@@ -51,15 +51,18 @@ def debug_log(*args):
     if DEBUG:
         print(*args, file=sys.stderr)
 
+def cleanup_value(tag):
+    return str(tag.string).replace("\u2020", "")
+
 def parse_file(fh):
-    soup = BeautifulSoup(fh, 'html.parser')
+    soup = BeautifulSoup(fh, from_encoding="utf8")
     table = soup.select_one('#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table')
     data = {}
     for i, tag in enumerate(table.find_all(["td","th"])):
         if i in TEXT_FIELDS:
             assert(tag.string == TEXT_FIELDS[i])
         elif i in DATA_FIELDS:
-            data[DATA_FIELDS[i]] = int(tag.string)
+            data[DATA_FIELDS[i]] = int(cleanup_value(tag))
 
     return table, data
 
@@ -91,7 +94,7 @@ def extract_df():
         else:
             last_hash = file_hash
 
-        with file.open() as fh:
+        with file.open("rb") as fh:
             file_date = datetime.strptime(file.name, "covid-%Y-%m-%dT%H-%M-%S.html").date()
             if file_date.weekday() == 0:
                 ## Monday, data is correct as of Friday 5pm
