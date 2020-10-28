@@ -51,10 +51,15 @@ def debug_log(*args):
     if DEBUG:
         print(*args, file=sys.stderr)
 
-def cleanup_value(tag):
-    return str(tag.string).replace("\u2020", "")
+def cleanup_value(tag, file_date, field_index):
+    if ((file_date == date(2020,10,27) or file_date == date(2020,10,28))
+        and field_index in set([19, 20, 21, 22])):
+        ## Totals published 2020-10-27 had a dagger symbol
+        return str(tag.string).replace("\u2020", "")
+    else:
+        return str(tag.string)
 
-def parse_file(fh):
+def parse_file(fh, file_date = None):
     soup = BeautifulSoup(fh, 'html.parser')
     table = soup.select_one('#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table')
     data = {}
@@ -62,7 +67,7 @@ def parse_file(fh):
         if i in TEXT_FIELDS:
             assert(tag.string == TEXT_FIELDS[i])
         elif i in DATA_FIELDS:
-            data[DATA_FIELDS[i]] = int(cleanup_value(tag))
+            data[DATA_FIELDS[i]] = int(cleanup_value(tag, file_date, i))
 
     return table, data
 
@@ -102,7 +107,7 @@ def extract_df():
             else:
                 ## other days, data is correct as of previous day at 5pm
                 data_date = file_date - timedelta(days = 1)
-            table, data = parse_file(fh)
+            table, data = parse_file(fh, file_date)
 
         if data != last_data:
             debug_log("New data at", file_date)
