@@ -115,7 +115,7 @@ def extract_df():
             tfh.write(str(table))
 
             pd_row = []
-            pd_row.append(data_date)
+            pd_row.append(pd.to_datetime(data_date))
             for n in DATASET_NAMES:
                 pd_row.append(data[n])
             pd_data.append(pd_row)
@@ -194,7 +194,7 @@ def main():
     df_smoothed = add_weekend(df)
 
     ## Compute and export rolling daily statistics
-    rolling = df.loc[:,["staff.on","staff.off","student.on","student.off"]].rolling(5).sum().dropna()
+    rolling = df.loc[:,["staff.on","staff.off","student.on","student.off"]].rolling("7D", min_periods=5).sum().dropna()
     rolling.rename(columns=lambda x: x.replace(".", "rolling7."), inplace=True)
     df_rolling = pd.concat([df_smoothed, rolling], axis=1)
 
