@@ -55,6 +55,15 @@ def cleanup_value(tag, file_date, field_index):
     if ((file_date == date(2020,10,27) or file_date == date(2020,10,28))
         and field_index in set([19, 20, 21, 22])):
         ## Totals published 2020-10-27 had a dagger symbol
+        ## "The total now includes an additional 89 positive student cases that were confirmed
+        ## by the UCL COVID-19 testing programme. These are mainly cases of symptomatic students
+        ## in university accomodation who did not update Connect to Protect with their
+        ## positive test result."
+        return str(tag.string).replace("\u2020", "")
+    elif ((file_date == date(2020,11,5) or file_date == date(2020,11,6))
+        and field_index == 11):
+        ## 7-day total was revised on 2020-11-05
+        ## "This number has been updated following a review of historic cases on Connect to Protect"
         return str(tag.string).replace("\u2020", "")
     else:
         return str(tag.string)
