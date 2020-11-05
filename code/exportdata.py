@@ -52,6 +52,7 @@ def debug_log(*args):
         print(*args, file=sys.stderr)
 
 def cleanup_value(tag, file_date, field_index):
+    s = " ".join(tag.stripped_strings)
     if ((file_date == date(2020,10,27) or file_date == date(2020,10,28))
         and field_index in set([19, 20, 21, 22])):
         ## Totals published 2020-10-27 had a dagger symbol
@@ -59,14 +60,14 @@ def cleanup_value(tag, file_date, field_index):
         ## by the UCL COVID-19 testing programme. These are mainly cases of symptomatic students
         ## in university accomodation who did not update Connect to Protect with their
         ## positive test result."
-        return str(tag.string).replace("\u2020", "")
+        return s.replace("\u2020", "")
     elif ((file_date == date(2020,11,5) or file_date == date(2020,11,6))
-        and field_index == 11):
+        and field_index == 16):
         ## 7-day total was revised on 2020-11-05
         ## "This number has been updated following a review of historic cases on Connect to Protect"
-        return str(tag.string).replace("\u2020", "")
+        return s.replace("\u2020", "")
     else:
-        return str(tag.string)
+        return s
 
 def parse_file(fh, file_date = None):
     soup = BeautifulSoup(fh, 'html.parser')
