@@ -98,8 +98,11 @@ def extract_df():
         debug_log("Loading from", file)
 
         with file.open("rb") as fh:
+            data = fh.read()
+            if len(data) == 0:
+                continue
             hash = hashlib.sha256()
-            hash.update(fh.read())
+            hash.update(data)
             file_hash = hash.hexdigest()
 
         if file_hash == last_hash:
