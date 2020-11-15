@@ -155,7 +155,7 @@ def to_json(df, jsonfile):
                 ds.append((d.strftime("%Y-%m-%d"), v))
     json.dump(datasets, jsonfile, sort_keys=True, indent=4)
 
-def export(df, df_smoothed, df_extra):
+def export(df, df_smoothed):
     ## Export raw data to CSV
     with open("../data/covid_raw.csv", "w", newline='') as csvfile:
         df.to_csv(csvfile, line_terminator="\r\n")
@@ -171,14 +171,6 @@ def export(df, df_smoothed, df_extra):
     ## Export smoothed data to JSON
     with open("../data/covid.json", "w", newline='') as jsonfile:
         to_json(df_smoothed, jsonfile)
-
-    ## Export extra data to CSV
-    with open("../data/covid_extra.csv", "w", newline='') as csvfile:
-        df_extra.to_csv(csvfile, line_terminator="\r\n")
-
-    ## Export extra data to JSON
-    with open("../data/covid_extra.json", "w", newline='') as jsonfile:
-        to_json(df_extra, jsonfile)
 
 def add_weekend(df):
     ## Add weekend data
@@ -211,7 +203,7 @@ def main():
     rolling.rename(columns=lambda x: x.replace(".", "rolling7."), inplace=True)
     df_rolling = pd.concat([df_smoothed, rolling], axis=1)
 
-    export(df, df_smoothed, df_rolling)
+    export(df, df_rolling)
 
 
 if __name__=="__main__":
