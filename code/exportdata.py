@@ -88,6 +88,8 @@ def extract_df():
     original = p / 'original'
     last_data = None
     last_hash = None
+    ## File date of the last file read
+    last_date = None
 
     ## Data to build into PANDAS dataframe
     pd_data = []
@@ -123,15 +125,31 @@ def extract_df():
             table, data = parse_file(fh, file_date)
 
         if data != last_data:
+            ## Check if data has changed but file date has not
+            is_extra = (file_date == last_date)
+            if is_extra:
+                 debug_log("Extra data at", file_date)
+            last_date = file_date
+
             debug_log("New data at", file_date)
-            tfh.write("<h2> Data published on " + file_date.strftime("%Y-%m-%d (%A)") + "</h2>")
+            if is_extra:
+                tfh.write('<h2 style="color: red">Extra data published on ' + file_date.strftime("%Y-%m-%d (%A)") + "</h2>\n")
+            else:
+                tfh.write("<h2>Data published on " + file_date.strftime("%Y-%m-%d (%A)") + "</h2>\n")
+            tfh.write("<code>"+file.name+"</code>\n")
             tfh.write(str(table))
 
             pd_row = []
             pd_row.append(pd.to_datetime(data_date))
             for n in DATASET_NAMES:
                 pd_row.append(data[n])
-            pd_data.append(pd_row)
+
+            if is_extra:
+                ## If we have seen this date before, overwrite last entry
+                pd_data[-1] = pd_row
+            else:
+                ## Otherwise add the entry to the end
+                pd_data.append(pd_row)
 
             last_data = data
         else:
