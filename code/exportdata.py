@@ -71,8 +71,22 @@ def cleanup_value(tag, file_date, field_index):
 
 def parse_file(fh, file_date = None):
     soup = BeautifulSoup(fh, 'html.parser')
+    header = soup.select_one('.box > h2:nth-child(1)')
     table = soup.select_one('#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table')
     data = {}
+    if header.string == "Daily reported coronavirus cases (last update Tuesday\xa05\xa0January)":
+        ## Handle data for start of term
+        all_tags = table.find_all(["td","th"])
+        data["staff.on"] = int(cleanup_value(all_tags[9], file_date, 9))
+        data["staff.off"] = int(cleanup_value(all_tags[10], file_date, 10))
+        data["student.on"] = int(cleanup_value(all_tags[11], file_date, 11))
+        data["student.off"] = int(cleanup_value(all_tags[12], file_date, 12))
+        data["stafftotal.on"] = int(cleanup_value(all_tags[14], file_date, 13))
+        data["stafftotal.off"] = int(cleanup_value(all_tags[15], file_date, 14))
+        data["studenttotal.on"] = int(cleanup_value(all_tags[16], file_date, 15))
+        data["studenttotal.off"] = int(cleanup_value(all_tags[17], file_date, 16))
+        return table, data
+
     for i, tag in enumerate(table.find_all(["td","th"])):
         if i in TEXT_FIELDS:
             assert(tag.string == TEXT_FIELDS[i])
@@ -94,7 +108,7 @@ def extract_df():
     ## Data to build into PANDAS dataframe
     pd_data = []
 
-    tfh = open(p / 'original-tables.html', "w", newline='')
+    tfh = open(p / 'original-tables.html', "w", newline='', encoding="utf-8")
     tfh.write('<html><head><meta charset="UTF-8"></head><body>\n')
     for file in sorted(original.glob("covid-*.html")):
         debug_log("Loading from", file)
@@ -142,7 +156,7 @@ def extract_df():
             pd_row = []
             pd_row.append(pd.to_datetime(data_date))
             for n in DATASET_NAMES:
-                pd_row.append(data[n])
+                pd_row.append(data.get(n, np.nan))
 
             if is_extra:
                 ## If we have seen this date before, overwrite last entry
@@ -195,7 +209,14 @@ def add_weekend(df):
     extra_rows = []
     df_smoothed = df.copy()
     for d in df_smoothed.index:
-        if d.weekday() == MONDAY:
+        if d.strftime("%Y-%m-%d") == '2021-01-04':
+            ## Handle data for start of term
+            extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 18.0
+            df_smoothed.loc[d, SMOOTHED_NAMES] = extra
+            for i in range(17,0,-1):
+                entry_date = d - timedelta(days = i)
+                extra_rows.append([entry_date] + list(extra))
+        elif d.weekday() == MONDAY:
             ## Share weekend + Monday data over three days
             extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 3.0
             ## Replace Monday data with its share
