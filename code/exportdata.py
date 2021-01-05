@@ -94,7 +94,7 @@ def extract_df():
     ## Data to build into PANDAS dataframe
     pd_data = []
 
-    tfh = open(p / 'original-tables.html', "w", newline='')
+    tfh = open(p / 'original-tables.html', "w", newline='', encoding="utf-8")
     tfh.write('<html><head><meta charset="UTF-8"></head><body>\n')
     for file in sorted(original.glob("covid-*.html")):
         debug_log("Loading from", file)
