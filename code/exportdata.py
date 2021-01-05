@@ -137,7 +137,8 @@ def extract_df():
             else:
                 tfh.write("<h2>Data published on " + file_date.strftime("%Y-%m-%d (%A)") + "</h2>\n")
             tfh.write("<code>"+file.name+"</code>\n")
-            tfh.write(unicode(table))
+            ss = str(table)
+            tfh.write(ss)
 
             pd_row = []
             pd_row.append(pd.to_datetime(data_date))
