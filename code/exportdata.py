@@ -52,6 +52,11 @@ def debug_log(*args):
         print(*args, file=sys.stderr)
 
 def cleanup_value(tag, file_date, field_index):
+    if tag.string == "New cases in last 24 hours ***" and field_index == 8:
+        return TEXT_FIELDS[8]
+    elif tag.string == "New cases in last 7 days ***" and field_index == 13:
+        return TEXT_FIELDS[13]
+
     s = " ".join(tag.stripped_strings)
     if ((file_date == date(2020,10,27) or file_date == date(2020,10,28))
         and field_index in set([19, 20, 21, 22])):
@@ -89,7 +94,7 @@ def parse_file(fh, file_date = None):
 
     for i, tag in enumerate(table.find_all(["td","th"])):
         if i in TEXT_FIELDS:
-            assert(tag.string == TEXT_FIELDS[i])
+            assert(cleanup_value(tag, file_date, i) == TEXT_FIELDS[i])
         elif i in DATA_FIELDS:
             data[DATA_FIELDS[i]] = int(cleanup_value(tag, file_date, i))
 
