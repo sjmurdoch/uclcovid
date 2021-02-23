@@ -1,4 +1,5 @@
 import sys
+import re
 import math
 import json
 import hashlib
@@ -43,6 +44,7 @@ DATE_LABEL = 'date'
 DATASET_NAMES = ['staff.on', 'staff.off', 'student.on', 'student.off',
                  'staff7.on', 'staff7.off', 'student7.on', 'student7.off',
                  'stafftotal.on', 'stafftotal.off', 'studenttotal.on', 'studenttotal.off']
+DATE_UPDATED = 'date.updated'
 
 ## These figures need smoothing over the weekend
 SMOOTHED_NAMES = ['staff.on', 'staff.off', 'student.on', 'student.off']
@@ -74,6 +76,19 @@ def cleanup_value(tag, file_date, field_index):
     else:
         return s
 
+def parse_html_date(groups, file_date):
+    year = groups[2]
+    if year is None:
+        if groups[1] in set(["October", "November", "December"]):
+            year = "2020"
+        else:
+            year = "2021"
+
+    html_date = datetime.strptime(groups[0] + " " + groups[1] + " " + year,
+                  "%d %B %Y").date()
+    return html_date
+
+DATE_RE = re.compile(r"\(last update \w+\s(\d+)\s(\w+)(?:\s(\d+))?\)")
 def parse_file(fh, file_date = None):
     soup = BeautifulSoup(fh, 'html.parser')
     header = soup.select_one('.box > h2:nth-child(1)')
@@ -90,7 +105,13 @@ def parse_file(fh, file_date = None):
         data["stafftotal.off"] = int(cleanup_value(all_tags[15], file_date, 14))
         data["studenttotal.on"] = int(cleanup_value(all_tags[16], file_date, 15))
         data["studenttotal.off"] = int(cleanup_value(all_tags[17], file_date, 16))
+        data[DATE_UPDATED] = date(2021, 1, 5)
         return table, data
+
+    match = DATE_RE.search(header.string)
+    assert(match)
+    html_date = parse_html_date(match.groups(), file_date)
+    data[DATE_UPDATED] = html_date
 
     for i, tag in enumerate(table.find_all(["td","th"])):
         if i in TEXT_FIELDS:
@@ -157,6 +178,10 @@ def extract_df():
                 tfh.write("<h2>Data published on " + file_date.strftime("%Y-%m-%d (%A)") + "</h2>\n")
             tfh.write("<code>"+file.name+"</code>\n")
             tfh.write(str(table))
+
+            if (data[DATE_UPDATED] != file_date):
+                debug_log("Date mismatch at " + str(data[DATE_UPDATED]) +
+                            " (html) and " + str(file_date) + "(file name)")
 
             pd_row = []
             pd_row.append(pd.to_datetime(data_date))
