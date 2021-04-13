@@ -1,3 +1,6 @@
+## NOTES
+## Data was not published on 2021-03-31 (Wednesday) -- not yet corrected but appears to be 3 staff on-campus cases
+
 import sys
 import re
 import math
@@ -244,6 +247,13 @@ def add_weekend(df):
             extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 18.0
             df_smoothed.loc[d, SMOOTHED_NAMES] = extra
             for i in range(17,0,-1):
+                entry_date = d - timedelta(days = i)
+                extra_rows.append([entry_date] + list(extra))
+        elif d.strftime("%Y-%m-%d") == '2021-04-12':
+            ## Handle data over Easter
+            extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 12.0
+            df_smoothed.loc[d, SMOOTHED_NAMES] = extra
+            for i in range(11,0,-1):
                 entry_date = d - timedelta(days = i)
                 extra_rows.append([entry_date] + list(extra))
         elif d.weekday() == MONDAY:
