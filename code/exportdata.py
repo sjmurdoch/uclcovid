@@ -76,6 +76,9 @@ def cleanup_value(tag, file_date, field_index):
         ## 7-day total was revised on 2020-11-05
         ## "This number has been updated following a review of historic cases on Connect to Protect"
         return s.replace("\u2020", "")
+    elif file_date == date(2021,7,15) and field_index == 22:
+        ## Was listed as 41, but this was clearly a typo
+        return "414"
     else:
         return s
 
