@@ -61,6 +61,8 @@ def cleanup_value(tag, file_date, field_index):
         return TEXT_FIELDS[8]
     elif tag.string == "New cases in last 7 days ***" and field_index == 13:
         return TEXT_FIELDS[13]
+    elif tag.string == "Total cases since 28 Sept 2020 (start of Term 1, 2020/21 academic year)" and field_index == 18:
+        return TEXT_FIELDS[18]
 
     s = " ".join(tag.stripped_strings)
     if ((file_date == date(2020,10,27) or file_date == date(2020,10,28))
