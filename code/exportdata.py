@@ -81,6 +81,12 @@ def cleanup_value(tag, file_date, field_index):
     elif file_date == date(2021,7,15) and field_index == 22:
         ## Was listed as 41, but this was clearly a typo
         return "414"
+    elif (file_date == date(2021,12,10) or file_date == date(2021,12,11)
+          or file_date == date(2021,12,12)) and (field_index==21 or field_index==22):
+        ## "This number is likely to increase over coming days, as the Connect
+        ##  to Protect team is in the process following-up all LFT positive
+        ##  reports for PCR confirmatory results."
+        return s.replace("****", "")
     else:
         return s
 
@@ -170,7 +176,11 @@ def extract_df():
             else:
                 ## other days, data is correct as of previous day at 5pm
                 data_date = file_date - timedelta(days = 1)
-            table, data = parse_file(fh, file_date)
+            try:
+                table, data = parse_file(fh, file_date)
+            except:
+                print("error in " + str(file_date), file=sys.stderr)
+                raise
 
         if data != last_data:
             ## Check if data has changed but file date has not
