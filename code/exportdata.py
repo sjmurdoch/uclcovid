@@ -82,7 +82,7 @@ def cleanup_value(tag, file_date, field_index):
         ## Was listed as 41, but this was clearly a typo
         return "414"
     elif (file_date == date(2021,12,10) or file_date == date(2021,12,11)
-          or file_date == date(2021,12,12)) and (field_index==21 or field_index==22):
+          or file_date == date(2021,12,12) or file_date == date(2021,12,13)) and (field_index==21 or field_index==22):
         ## "This number is likely to increase over coming days, as the Connect
         ##  to Protect team is in the process following-up all LFT positive
         ##  reports for PCR confirmatory results."
