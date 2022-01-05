@@ -257,8 +257,15 @@ def add_weekend(df):
     extra_rows = []
     df_smoothed = df.copy()
     for d in df_smoothed.index:
-        if d.strftime("%Y-%m-%d") == '2021-01-04':
-            ## Handle data for start of term
+        if d.strftime("%Y-%m-%d") == '2022-01-03':
+            ## Handle data for start of term 2 2022
+            extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 13.0
+            df_smoothed.loc[d, SMOOTHED_NAMES] = extra
+            for i in range(12,0,-1):
+                entry_date = d - timedelta(days = i)
+                extra_rows.append([entry_date] + list(extra))
+        elif d.strftime("%Y-%m-%d") == '2021-01-04':
+            ## Handle data for start of term 2 2021
             extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 18.0
             df_smoothed.loc[d, SMOOTHED_NAMES] = extra
             for i in range(17,0,-1):
