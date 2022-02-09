@@ -224,6 +224,16 @@ def extract_df():
     df = pd.DataFrame(pd_data, columns = [DATE_LABEL] + DATASET_NAMES, dtype='float64')
     df.set_index(DATE_LABEL, inplace=True, verify_integrity=True)
 
+    ## Add missing data
+    extra_df = pd.DataFrame([
+        ## Update by email (2022-02-07)
+        [pd.to_datetime('2022-02-02'),7,8,51,13,43,31,285,54,745,890,2234,1281]],
+        columns=[DATE_LABEL]+DATASET_NAMES)
+    extra_df = extra_df.astype({k : "float64" for k in DATASET_NAMES})
+    extra_df.set_index(DATE_LABEL, inplace=True, verify_integrity=True)
+    df = pd.concat([df, extra_df])
+    df.sort_index(inplace=True)
+
     return df
 
 def to_json(df, jsonfile):
