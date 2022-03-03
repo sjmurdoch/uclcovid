@@ -5,20 +5,45 @@ use scraper::{Html, Selector};
 use std::fs::{File};
 use std::io::{Read};
 
-fn main() -> Result<(), Box<dyn Error>> {
-    for entry in glob("../../data/original/covid-2022*.html")? {
-        let path = entry?;
-        println!("{}", path.display());
+fn show(last: &[String]) {
+    for v in last {
+        print!("{}, ", v);
+    }
+    println!();
+}
 
-        let input = File::open(path)?;
+fn main() -> Result<(), Box<dyn Error>> {
+    let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper > div
+    > div > div > article > div > table th,td").unwrap();
+    let mut last: [String; 23] = Default::default();
+
+    for entry in glob("../../data/original/covid-*.html")? {
+        let path = entry?;
+        println!("Reading {}", path.display());
+
+        let input = File::open(&path)?;
         let mut buffered = BufReader::new(input);
         let mut html = String::new();
         buffered.read_to_string(&mut html).unwrap();
         let html = Html::parse_document(&html);
-        let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table th,td").unwrap();
+
         //let selector2 = Selector::parse("th,td").unwrap();
-        for element in html.select(&selector) {
-            println!("{}", element.inner_html());
+
+        let mut changed = false;
+        for (i, element) in html.select(&selector).enumerate() {
+            let text = element.text()
+                .collect::<Vec<&str>>()
+                .join(" ");
+            if last[i] != text {
+                last[i] = text;
+                changed = true;
+            }
+            //println!("{}", element.inner_html());
+        }
+        if changed {
+            show(&last);
+        } else {
+            println!("unchanged: {}", path.display())
         }
 
         //let soup = Soup::from_reader(buffered)?;
