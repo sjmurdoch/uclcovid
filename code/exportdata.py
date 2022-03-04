@@ -260,7 +260,7 @@ def extract_df():
     ## Add missing data
     extra_df = pd.DataFrame([
         ## Update by email (2022-02-07)
-        [pd.to_datetime('2022-02-02'),7,8,51,13,43,31,285,54,745,890,2234,1281]],
+        [pd.to_datetime('2022-02-02'),7,8,51,13,43,31,285,54,745,890,2234,1231]],
         columns=[DATE_LABEL]+DATASET_NAMES)
     extra_df = extra_df.astype({k : "float64" for k in DATASET_NAMES})
     extra_df.set_index(DATE_LABEL, inplace=True, verify_integrity=True)
