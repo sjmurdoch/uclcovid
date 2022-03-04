@@ -41,6 +41,28 @@ TEXT_FIELDS = {
     18: "Total cases since 28 Sept 2020 (start of Term 1)",
 }
 
+DATA_FIELDS_WEEKLY = {
+    9: "staff7.on",
+    10: "staff7.off",
+    11: "student7.on",
+    12: "student7.off",
+
+    14: "stafftotal.on",
+    15: "stafftotal.off",
+    16: "studenttotal.on",
+    17: "studenttotal.off",
+}
+TEXT_FIELDS_WEEKLY = {
+    1: "Staff",
+    2: "Students",
+    4: "On campus *",
+    5: "Off campus **",
+    6: "On campus *",
+    7: "Off campus **",
+    8: "New cases in last 7 days ***",
+    13: "Total cases since 28 Sept 2020 (start of Term 1, 2020/21 academic year)",
+}
+
 DEBUG = False
 MONDAY = 0
 DATE_LABEL = 'date'
@@ -127,11 +149,22 @@ def parse_file(fh, file_date = None):
     html_date = parse_html_date(match.groups(), file_date)
     data[DATE_UPDATED] = html_date
 
+    ## Format changed on 2022-03-03 to weekly-only figures
+    if file_date >= date(2022,3,3):
+        text_fields = TEXT_FIELDS_WEEKLY
+        data_fields = DATA_FIELDS_WEEKLY
+    else:
+        text_fields = TEXT_FIELDS
+        data_fields = DATA_FIELDS
+
     for i, tag in enumerate(table.find_all(["td","th"])):
-        if i in TEXT_FIELDS:
-            assert(cleanup_value(tag, file_date, i) == TEXT_FIELDS[i])
-        elif i in DATA_FIELDS:
-            data[DATA_FIELDS[i]] = int(cleanup_value(tag, file_date, i))
+        if i in text_fields:
+            cleaned = cleanup_value(tag, file_date, i)
+            if cleaned != text_fields[i]:
+                sys.stderr.write("Expected {} got {} at date {} (original {})\n".format(text_fields[i], cleaned, file_date, tag))
+                sys.exit(1)
+        elif i in data_fields:
+            data[data_fields[i]] = int(cleanup_value(tag, file_date, i))
 
     return table, data
 
@@ -288,6 +321,13 @@ def add_weekend(df):
             for i in range(11,0,-1):
                 entry_date = d - timedelta(days = i)
                 extra_rows.append([entry_date] + list(extra))
+        elif d.strftime("%Y-%m-%d") >= '2022-03-02':
+             ## Handle data after daily statistics were dropped
+            extra = df_smoothed.loc[d, ["staff7.on", "staff7.off", "student7.on", "student7.off"]] / 7.0
+            df_smoothed.loc[d, SMOOTHED_NAMES] = extra.to_numpy()
+            for i in range(6,0,-1):
+                entry_date = d - timedelta(days = i)
+                extra_rows.append([entry_date] + list(extra))           
         elif d.weekday() == MONDAY:
             ## Share weekend + Monday data over three days
             extra = df_smoothed.loc[d, SMOOTHED_NAMES] / 3.0
