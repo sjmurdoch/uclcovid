@@ -2,5 +2,5 @@
 
 members = [
     "parse_covid",
-    #"parse_covid_par"
+    "parse_covid_par"
 ]

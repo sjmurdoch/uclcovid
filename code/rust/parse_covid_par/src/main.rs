@@ -1,6 +1,6 @@
 use std::error::Error;
 use std::io::BufReader;
-use glob::glob;
+use std::path::PathBuf;
 use scraper::{Html, Selector};
 use std::fs::{File};
 use std::io::{Read};
@@ -12,13 +12,16 @@ fn show(last: &[String]) {
     println!();
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper > div
-    > div > div > article > div > table th,td").unwrap();
+
+
+fn parse_chunk(filenames: &[glob::GlobResult], selector: &Selector) -> Result<(), Box<dyn Error>> {
+
     let mut last: [String; 23] = Default::default();
 
-    for entry in glob("../../../data/original/covid-*.html")? {
-        let path = entry?;
+    for entry in filenames {
+        let path: &PathBuf = entry.as_ref().unwrap_or_else(|error| {
+            panic!("GlobError{:?}", error)
+        });
         println!("Reading {}", path.display());
 
         let input = File::open(&path)?;
@@ -53,6 +56,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         //header = soup.select_one('.box > h2:nth-child(1)')
         //table = soup.select_one('#current-confirmed-cases-covid-19 > div.site-content.wrapper > div > div > div > article > div > table')
     }
+
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper > div
+> div > div > article > div > table th,td").unwrap();
+
+    let filenames:Vec<glob::GlobResult> = glob::glob("../../../data/original/covid-*.html")?.collect();
+
+    parse_chunk(&filenames, &selector)?;
 
     Ok(())
 }
