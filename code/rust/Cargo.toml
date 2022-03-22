@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "parse_covid",
+    #"parse_covid_par"
+]
