@@ -1,5 +1,6 @@
 ## NOTES
 ## Data was not published on 2021-03-31 (Wednesday) -- not yet corrected but appears to be 3 staff on-campus cases
+## Still to correct mising data over Easter 2022
 
 import sys
 import re
@@ -109,6 +110,8 @@ def cleanup_value(tag, file_date, field_index):
         ##  to Protect team is in the process following-up all LFT positive
         ##  reports for PCR confirmatory results."
         return s.replace("****", "")
+    elif file_date == date(2022,5,13) and field_index == 8 and not s.endswith("***"):
+        return s + " ***"
     else:
         return s
 
@@ -124,7 +127,7 @@ def parse_html_date(groups, file_date):
                   "%d %B %Y").date()
     return html_date
 
-DATE_RE = re.compile(r"\(last update \w+\s(\d+)\s(\w+)(?:\s(\d+))?\)")
+DATE_RE = re.compile(r"\((?:last|final) update \w+\s(\d+)\s(\w+)(?:\s(\d+))?\)")
 def parse_file(fh, file_date = None):
     soup = BeautifulSoup(fh, 'html.parser')
     header = soup.select_one('.box > h2:nth-child(1)')
