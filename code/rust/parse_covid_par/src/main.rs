@@ -4,6 +4,13 @@ use std::path::PathBuf;
 use scraper::{Html, Selector};
 use std::fs::{File};
 use std::io::{Read};
+use lazy_static::lazy_static;
+use rayon::prelude::*;
+
+lazy_static! {
+    static ref SELECTOR: Selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper \
+        > div > div > div > article > div > table th,td").unwrap();
+}
 
 fn show(last: &[String]) {
     for v in last {
@@ -14,14 +21,13 @@ fn show(last: &[String]) {
 
 
 
-fn parse_chunk(filenames: &[glob::GlobResult], selector: &Selector) -> Result<(), Box<dyn Error>> {
+fn parse_chunk(filenames: &[PathBuf]) -> Result<(), std::io::Error> {
 
     let mut last: [String; 23] = Default::default();
+    let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper \
+    > div > div > div > article > div > table th,td").unwrap();
 
-    for entry in filenames {
-        let path: &PathBuf = entry.as_ref().unwrap_or_else(|error| {
-            panic!("GlobError{:?}", error)
-        });
+    for path in filenames {
         println!("Reading {}", path.display());
 
         let input = File::open(&path)?;
@@ -61,12 +67,12 @@ fn parse_chunk(filenames: &[glob::GlobResult], selector: &Selector) -> Result<()
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let selector = Selector::parse("#current-confirmed-cases-covid-19 > div.site-content.wrapper > div
-> div > div > article > div > table th,td").unwrap();
+    let filenames: Result<Vec<_>, _> = glob::glob("../../../data/original/covid-*.html")?.collect();
 
-    let filenames:Vec<glob::GlobResult> = glob::glob("../../../data/original/covid-*.html")?.collect();
+    let mut out = Vec::new(); 
+    filenames?.par_chunks(10).map(parse_chunk).collect_into_vec(&mut out);
 
-    parse_chunk(&filenames, &selector)?;
+    //parse_chunk(&filenames)?;
 
     Ok(())
 }
