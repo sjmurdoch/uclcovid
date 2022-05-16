@@ -110,7 +110,7 @@ def cleanup_value(tag, file_date, field_index):
         ##  to Protect team is in the process following-up all LFT positive
         ##  reports for PCR confirmatory results."
         return s.replace("****", "")
-    elif file_date == date(2022,5,13) and field_index == 8 and not s.endswith("***"):
+    elif file_date >= date(2022,5,13) and field_index == 8 and not s.endswith("***"):
         return s + " ***"
     else:
         return s
