@@ -1,6 +1,5 @@
 from pathlib import Path
 from bs4 import BeautifulSoup, Tag
-from numpy import isin
 import requests
 import re
 
@@ -48,6 +47,10 @@ def main() -> None:
         url = get_url_for_update(t)
         print(f"Downloading to {filename} from {url}")
         download_to_file(url, UPDATES_PATH / filename)
+
+    ## Download an extra one not present on the page
+    download_to_file("https://uclnews.org.uk/UAA-7U8DQ-C86EC44060C3E0D3H748FS5952AA4803060A4F/cr.aspx",
+        UPDATES_PATH / "167_4_May_2022__Issue_165_.html")
 
 if __name__ == "__main__":
     main()
