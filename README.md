@@ -113,9 +113,9 @@ gzcat manifest-sha256.txt.gz | grep ' data/original/' | shasum -a 256 -c --quiet
 
 The manifest's other half describes deduplicated files deleted during archival and will report as missing. That is expected.
 
-**Do not run `code/exportdata.py` against this archive.** It is the original live scraper, kept for the record, and it *moves* any snapshot whose content matches the previous one into a `duplicates/` directory as a side effect of parsing. This is not theoretical: during verification on a scratch copy it moved `covid-2022-07-29T11-34-03.html`, the last snapshot in the collection, out of `data/original/`. It also calls `sys.exit(1)` on a mismatched table label, which raises `SystemExit` and so bypasses ordinary exception handling. Use `snapshot_to_csv.py`.
+**Do not run `code/original/exportdata.py` against this archive.** It is the original live scraper, kept for the record, and it *moves* any snapshot whose content matches the previous one into a `duplicates/` directory as a side effect of parsing. This is not theoretical: during verification on a scratch copy it moved `covid-2022-07-29T11-34-03.html`, the last snapshot in the collection, out of `data/original/`. It also calls `sys.exit(1)` on a mismatched table label, which raises `SystemExit` and so bypasses ordinary exception handling. Use `snapshot_to_csv.py`.
 
-**The code needs pandas 1.5.x.** `iteritems()` was removed in pandas 2.0 and `line_terminator` was renamed in 1.5, so a current pandas will not run this without small changes to `to_json` and `export`. The pins in `code/requirements.txt` date from 2020 and no longer build; the verification was done with Python 3.11, pandas 1.5.3, numpy 1.26.4 and BeautifulSoup 4.
+**The code needs pandas 1.5.x.** `iteritems()` was removed in pandas 2.0 and `line_terminator` was renamed in 1.5, so a current pandas will not run this without small changes to `to_json` and `export`. The pins in `code/original/requirements.txt` date from 2020 and no longer build; the verification was done with Python 3.11, pandas 1.5.3, numpy 1.26.4 and BeautifulSoup 4.
 
 ## Access over HTTPS
 
@@ -123,12 +123,14 @@ The JSON is served at [`https://sjmurdoch.github.io/uclcovid/data/covid.json`](h
 
 ## Code
 
+Two scripts are meant to be run, both written in 2026 for the archive:
+
 | | |
 |---|---|
-| `code/download.sh` | What cron ran: fetch, parse, commit, push. Paths are hardcoded for the machine it ran on |
-| `code/exportdata.py` | The live parser that produced all published data. Read it, do not run it |
-| `code/snapshot_to_csv.py` | The archival parser: same output, no side effects, survives bad input |
+| `code/snapshot_to_csv.py` | The archival parser: regenerates the published tables from the snapshots, with no side effects, surviving bad input |
 | `code/fetch_updates.py` | Downloads the newsletters and records where each came from |
+
+The scraper as it actually ran on the collection machine is kept under [`code/original/`](code/original/) for reference — `download.sh`, `exportdata.py` and the 2020 `requirements.txt`. None of it runs against this archive, and `exportdata.py` is unsafe to try, for the reasons in that directory's README and under "Reproducing and verifying" above. `snapshot_to_csv.py` reproduces its output exactly and safely.
 
 An unmerged `rust` branch also exists, holding an abandoned attempt to reimplement the parser in Rust. It produced none of the published data and is not needed to understand or reproduce anything here; it is kept off `main` deliberately, for the reasons in [`PROVENANCE.md`](PROVENANCE.md).
 

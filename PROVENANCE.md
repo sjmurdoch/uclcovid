@@ -18,7 +18,7 @@ MAILFROM=smurdoch
 
 **The line is commented out.** That single `#` is how the project ended, on or shortly after 29 July 2022. UCL had decommissioned the page being fetched, so `exportdata.py` began failing; with `MAILTO` set, every failure was emailed twice a day. Commenting out the line stopped the mail.
 
-**The schedule shown is the final one** — twice daily at 11:34 and 23:34. For most of the project the job ran hourly at minute 34; it changed around 16 May 2022, which the snapshot filenames show and `code/exportdata.py`'s mtime of that date corroborates.
+**The schedule shown is the final one** — twice daily at 11:34 and 23:34. For most of the project the job ran hourly at minute 34; it changed around 16 May 2022, which the snapshot filenames show and `code/original/exportdata.py`'s mtime of that date corroborates.
 
 `download.sh` fetched the page with `wget`, ran `exportdata.py` to parse it into the CSV and JSON files, then committed and pushed — one automatic commit per run, about 6,500 of them. Commit timestamps run roughly three minutes behind the snapshot filenames, which is the download and parse time.
 
@@ -136,7 +136,7 @@ Their *filenames* were not redundant, though, and that is why `manifest-sha256.t
 
 The manifest was verified complete before anything was deleted — 7,890 + 6,140 = 14,030 entries, matching disk exactly, with `shasum -a 256 -c` returning exit 0 over all of them.
 
-**Also deleted:** the corrupted `.git` directory described above (54 MB); a Linux virtualenv (114 MB, unusable on any other platform, and `code/requirements.txt` holds the pins); a pip cache; a second full clone of this repository, confirmed byte-identical by `diff -rq`; and the deploy key, which was tested against GitHub, found already revoked, and destroyed.
+**Also deleted:** the corrupted `.git` directory described above (54 MB); a Linux virtualenv (114 MB, unusable on any other platform, and `code/original/requirements.txt` holds the pins); a pip cache; a second full clone of this repository, confirmed byte-identical by `diff -rq`; and the deploy key, which was tested against GitHub, found already revoked, and destroyed.
 
 Nothing that was deleted is needed to reproduce any published figure, and nothing deleted was ever on GitHub except the `preservation` branch, whose commits were merged first.
 

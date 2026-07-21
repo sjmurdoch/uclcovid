@@ -28,7 +28,7 @@ About 90 seconds over 6,140 snapshots. Unparseable files are listed on stderr at
 
 ### Environment
 
-Needs **pandas 1.5.x** — `iteritems()` was removed in 2.0 and `line_terminator` renamed in 1.5. `code/requirements.txt` holds the 2020 pins and no longer builds. Create the environment with:
+Needs **pandas 1.5.x** — `iteritems()` was removed in 2.0 and `line_terminator` renamed in 1.5. `code/original/requirements.txt` holds the 2020 pins and no longer builds. Create the environment with:
 
 ```bash
 export UV_CACHE_DIR="$TMPDIR/uvcache"   # the default cache path is unwritable under the sandbox
@@ -40,7 +40,7 @@ Pushing to GitHub fails inside the sandbox (`nc: authentication method negotiati
 
 ## Two parsers, and why both exist
 
-`code/exportdata.py` and `code/snapshot_to_csv.py` implement the same parse and produce identical output. They are not redundant, and the difference matters:
+`code/original/exportdata.py` and `code/snapshot_to_csv.py` implement the same parse and produce identical output. They are not redundant, and the difference matters. The directory split reflects it: `snapshot_to_csv.py` (and `fetch_updates.py`) are 2026 tooling meant to be run; everything under `code/original/` is the live pipeline as it ran and is reference only.
 
 | | `exportdata.py` | `snapshot_to_csv.py` |
 |---|---|---|
@@ -49,9 +49,9 @@ Pushing to GitHub fails inside the sandbox (`nc: authentication method negotiati
 | On a duplicate | **Moves the file** into `data/duplicates/` | No dedup; reads only |
 | Paths | Hardcoded | CLI or environment |
 
-**Never run `exportdata.py` against `data/original/`.** Its dedup step mutates the archive as a side effect of parsing; during verification it moved the last snapshot in the collection out of `data/original/`. Use `snapshot_to_csv.py`.
+**Never run `code/original/exportdata.py` against `data/original/`.** Its dedup step mutates the archive as a side effect of parsing; during verification it moved the last snapshot in the collection out of `data/original/`. Use `snapshot_to_csv.py`.
 
-**Never modify `exportdata.py`.** It is byte-identical to commit `cf8d91aa` and that property is deliberate — it is the artefact that produced the published data, including the author's original header notes, some of which describe corrections that were never made. Verify with `git show cf8d91aa:code/exportdata.py | cmp - code/exportdata.py`. If it must be run for a comparison, patch a scratch copy.
+**Never modify `exportdata.py`.** It is byte-identical to commit `cf8d91aa` and that property is deliberate — it is the artefact that produced the published data, including the author's original header notes, some of which describe corrections that were never made. Verify with `git show cf8d91aa:code/exportdata.py | cmp - code/original/exportdata.py` (the historical blob path stays `code/exportdata.py`; only the working-tree path moved). If it must be run for a comparison, patch a scratch copy.
 
 `snapshot_to_csv.py` has no such claim on it and can be changed, subject to the regression check.
 
