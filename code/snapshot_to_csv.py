@@ -1,7 +1,11 @@
-## NOTES
-## Data was not published on 2021-03-31 (Wednesday) -- not yet corrected but appears to be 3 staff on-campus cases
-## Still to correct mising data over Easter 2022
-## TODO was it converted to float64?
+## Caveats about the data are in ../README.md, not here: the day UCL never
+## refreshed (2021-03-31), the week it never published (Easter 2022), and the
+## rest of what a reader needs in order to interpret the output. This file's
+## original notes described those as pending corrections; they were never
+## made, and the data is published as UCL reported it.
+##
+## The "was it converted to float64?" question those notes also raised is
+## answered in ../PRESERVATION.md: dropping the dtype changes nothing.
 
 import argparse
 import os
