@@ -10,13 +10,106 @@
         <title>COVID-19 // Professor Steven J. Murdoch</title>
         <link rel="me" href="https://mastodon.social/@sjmurdoch">
 
-    <link rel="stylesheet" href="../../theme/css/combined-min.css">
-    <!--[if lte IE 8]>
-    <link rel="stylesheet" href="../../theme/css/grids-responsive-old-ie-min.css">
-    <![endif]-->
-    <!--[if gt IE 8]><!-->
-    <link rel="stylesheet" href="../../theme/css/grids-responsive-min.css">
-    <!--<![endif]-->
+    <!-- The murdoch.is theme stylesheets that used to be linked here are not
+         vendored: they depend on Advocate, Concourse and Triplicate, which are
+         licensed commercial webfonts and cannot be redistributed. What follows
+         is a self-contained substitute using fonts every system already has.
+         It is not a reproduction of the original design. -->
+    <style>
+      :root {
+        --ink: #1a1a1a;
+        --muted: #5c5c5c;
+        --rule: #d8d8d8;
+        --link: #23527c;
+        --bg: #ffffff;
+        --panel: #f6f6f9;
+      }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Charter", "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+        font-size: 17px;
+        line-height: 1.55;
+      }
+      .content {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: 0 1.25rem 4rem;
+      }
+      h1, h2, h3 {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.2;
+        color: #111;
+      }
+      h1 { font-size: 2.1rem; margin: 0 0 1.5rem; }
+      h2 {
+        font-size: 1.5rem;
+        margin: 3rem 0 1rem;
+        padding-bottom: .3rem;
+        border-bottom: 1px solid var(--rule);
+      }
+      h3 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+      p { margin: 0 0 1rem; }
+      a { color: var(--link); }
+      a:hover { color: #123; }
+      sup a { text-decoration: none; }
+
+      /* Minimal stand-ins for the Pure CSS grid classes the markup uses. */
+      .pure-g { display: flex; flex-wrap: wrap; gap: 0 2rem; align-items: flex-start; }
+      .pure-g > * { min-width: 0; }
+      .pure-u-1 { width: 100%; }
+      /* The chart control rows carry an inline `display: flex` with no wrap, so
+         five buttons set a floor on the page width and narrow screens scroll
+         sideways. They do not set flex-wrap, so this rule still applies. */
+      div[style*="display: flex"] { flex-wrap: wrap; }
+      @media (min-width: 60rem) {
+        .pure-u-lg-2-3 { flex: 2 1 0; width: auto; }
+        .pure-u-lg-1-3 { flex: 1 1 0; width: auto; min-width: 14rem; }
+      }
+
+      .archive-note {
+        background: #fdf6e3;
+        border-bottom: 1px solid #e8dcc0;
+        color: #5b4a1f;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: .9rem;
+        line-height: 1.5;
+        padding: .8rem 1.25rem;
+        margin-bottom: 2.5rem;
+      }
+      .archive-note div { max-width: 60rem; margin: 0 auto; }
+      .archive-note strong { color: #3d3110; }
+
+      figure { margin: 1.5rem 0; }
+      .controls { margin: .75rem 0 1.5rem; text-align: center; }
+      button {
+        font: inherit;
+        font-size: .8rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #333;
+        background: #fafafa;
+        border: 1px solid #c4c4c4;
+        border-radius: 4px;
+        padding: .3rem .7rem;
+        cursor: pointer;
+      }
+      button:hover { background: #efefef; border-color: #a8a8a8; }
+      button:active { background: #e4e4e4; }
+      canvas { max-width: 100%; }
+      .footnote, footer {
+        color: var(--muted);
+        font-size: .875rem;
+      }
+      footer {
+        max-width: 60rem;
+        margin: 3rem auto 2rem;
+        padding: 1rem 1.25rem 0;
+        border-top: 1px solid var(--rule);
+      }
+      table { border-collapse: collapse; }
+    </style>
     <style>
       canvas {
         -moz-user-select: none;
@@ -53,7 +146,8 @@
       }
     </style>
 
-    <script defer src="../../theme/js/combined-min.js"></script>
+    <!-- ../../theme/js/combined-min.js dropped: it was the website's navigation
+         and social-icon behaviour, and the navigation it drove is gone. -->
     <!-- These three were loaded from cdn.jsdelivr.net. They are now stored in
          js/, byte for byte as that CDN served them, so the page does not
          depend on a CDN continuing to serve end-of-life versions. See
@@ -66,50 +160,16 @@
 </head>
 
 <body>
-<div class="pure-g-r" id="layout">
-<div class="sidebar pure-u">
-    <div class="cover-img" style="background-image: url('../../images/cover.jpg')">
-        <div class="cover-body">
-            <header class="header">
-                  <h1 class="brand-main"><a href="../..">Professor Steven J. Murdoch</a></h1>
-                  <p class="links"><a href="../../papers/">Publications</a>
-                    &bull; <a href="../../talks/">Talks</a>
-                    </p>
-                  <p class="links"><a href="../../teaching/">Teaching</a> &bull;
-                    <a href="../../projects/">Projects</a></p>
-                  <p class="links"><a href="https://www.benthamsgaze.org/">Bentham’s Gaze</a> &bull;
-                  <a href="../../#contact">Contact</a></p>
-                  <p class="social">
-                      <a href="https://twitter.com/sjmurdoch">
-                          <img src="../../theme/images/trans.png" class="sl-twitter-square sl" title="Twitter" alt="Twitter">
-                      </a>
-                      <a href="https://github.com/sjmurdoch">
-                          <img src="../../theme/images/trans.png" class="sl-github-square sl" title="GitHub" alt="GitHub">
-                      </a>
-                      <a href="https://www.flickr.com/photos/sjmurdoch/">
-                          <img src="../../theme/images/trans.png" class="sl-flickr sl" title="Flickr" alt="Flickr">
-                      </a>
-                      <a href="https://murdoch.is/blog/feeds/all.atom.xml">
-                          <img src="../../theme/images/trans.png" class="sl-rss-square sl" title="Atom feed" alt="Atom feed">
-                           <br />
-                      </a>
-                      <a href="https://uk.linkedin.com/in/sjmurdoch">
-                          <img src="../../theme/images/trans.png" class="sl-linkedin-square sl" title="LinkedIn" alt="LinkedIn">
-                      </a>
-                      <a href="https://www.youtube.com/channel/UCqoZew_jxvMaXoQLbYPLvYA">
-                          <img src="../../theme/images/trans.png" class="sl-youtube-square sl" title="YouTube" alt="YouTube">
-                      </a>
-                      <a href="https://scholar.google.co.uk/citations?user=vlPUYJEAAAAJ">
-                          <img src="../../theme/images/trans.png" class="sl-google-scholar-square sl" title="Google Scholar" alt="Google Scholar">
-                      </a>
-                      <a href="https://500px.com/StevenMurdoch">
-                          <img src="../../theme/images/trans.png" class="sl-500px sl" title="500px" alt="500px">
-                      </a>
-                  </p>
-            </header>
-        </div>
-    </div>
-</div>    <div class="pure-u-1">
+<div class="archive-note">
+  <div><strong>Archived copy.</strong> This is the interactive COVID-19 page from
+  <a href="https://murdoch.is/projects/covid/">murdoch.is</a>, preserved as part of the
+  <a href="https://github.com/sjmurdoch/uclcovid">uclcovid</a> dataset. It runs entirely from files
+  in this directory — no network, no CDN — so it will keep working after the sites it came from
+  have changed. The site navigation and styling have been removed; the text and charts are
+  as published. UCL published these statistics between October 2020 and May 2022.</div>
+</div>
+
+<div class="pure-u-1">
         <div class="content">
             <h1 class="content-subhead">COVID-19</h1>
 
@@ -205,7 +265,7 @@
               conclusions or predictions from this data, though I welcome those more qualified to do so to use <a
                 href="https://github.com/sjmurdoch/uclcovid">the data</a> as they wish. However, there are some aspects of
               the data which might not be obvious. In this section, I will, therefore discuss some of these findings in
-              the hope that it will assist those in interpreting the data. Please do get <a href="/#contact">in
+              the hope that it will assist those in interpreting the data. Please do get <a href="https://murdoch.is/#contact">in
                 contact</a> if you have any comments or questions.</p>
               <h3 id="discussion-campus">Definition of on-campus cases</h3>
               <p>The definition of an on-campus case for the purposes of these statistics is &ldquo;those who have
@@ -244,10 +304,9 @@
             <p>UCL does not carry out testing of staff or students without symptoms. The University of Cambridge does and, as of 1 November 2020, about <a href="https://www.cam.ac.uk/coronavirus/stay-safe-cambridge-uni/data-from-covid-19-testing-service">a third of positive cases</a> were identified through this asymptomatic testing programme. It&rsquo;s not clear how many of these cases would have become symptomatic, and it&rsquo;s not clear how Cambridge&rsquo;s example generalises, but it does seem likely that some asymptomatic cases are being missed in the UCL statistics.</p>
             <p>Not all individuals with symptoms will choose to get tested, and some who try will not be able to get a test, although UCL does offer its own testing programme <a href="https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-potential-cases/ucl-coronavirus-testing">for eligible staff and students</a>. Therefore some symptomatic cases of COVID-19 will not be identified through testing.</p>
             <p>Even those individuals who receive a positive test result may not all report their result to UCL. On 27 October there was a <a href="https://twitter.com/sjmurdoch/status/1321148555722215424">one-off addition of 89 cases</a> to the total, which were mainly students who received positive test results, did not notify UCL, but were identified because they used UCL&rsquo;s testing service. I&rsquo;ve also heard anecdotes of students not wanting to report cases to UCL. It&rsquo;s not clear how many other instances there are of positive results not being reported.</p>
-            <p>For all these reasons, it&rsquo;s clear that the statistics are an underestimate of the true number of cases, but it&rsquo;s not clear (to me) by how much. Do <a href="/#contact">get in touch</a> if you have any good ideas on how to estimate the level of uncertainty.</p>
+            <p>For all these reasons, it&rsquo;s clear that the statistics are an underestimate of the true number of cases, but it&rsquo;s not clear (to me) by how much. Do <a href="https://murdoch.is/#contact">get in touch</a> if you have any good ideas on how to estimate the level of uncertainty.</p>
         </div>
     </div>
-</div>
 
 <script>
   // The data used to be fetched at run time from
@@ -532,6 +591,9 @@
               backgroundColor: color(chartColors.wine).rgbString(),
               content: "Cases added*",
               enabled: false,
+              // The line sits near the left edge, so a centred label is clipped
+              // by the canvas. Nudge it inside.
+              xAdjust: 58,
             },
           }]
       }
@@ -635,6 +697,8 @@
               backgroundColor: color(chartColors.wine).rgbString(),
               content: "Cases reviewed",
               enabled: false,
+              // As above: near the left edge, so a centred label is clipped.
+              xAdjust: 62,
             },
           }]
       }
@@ -823,8 +887,12 @@
 
 </script>
 
-<footer class="footer">
-        <!-- Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a> -->
-</footer><div><a href="#" class="go-top"><i class="sl-chevron-up sl"></i></a></div></body>
+<footer>
+  Originally published at <a href="https://murdoch.is/projects/covid/">murdoch.is/projects/covid/</a>,
+  built with the <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a> for
+  <a href="http://blog.getpelican.com/">Pelican</a>. The data behind these charts, the snapshots it
+  was extracted from, and the code that did the extracting are at
+  <a href="https://github.com/sjmurdoch/uclcovid">github.com/sjmurdoch/uclcovid</a>.
+</footer>
+</body>
 </html>
