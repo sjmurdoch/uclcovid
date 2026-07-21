@@ -42,15 +42,21 @@ Both give `df22fb51…`. If `data/covid.json` is ever regenerated, regenerate th
 
 **Drawing now waits for `DOMContentLoaded`** rather than for the `XMLHttpRequest` to load, since there is no longer a request to wait for.
 
+**The page has its own stylesheet, and the site chrome is gone.** It used to link `../../theme/css/combined-min.css` from murdoch.is, so on its own it rendered as unstyled browser defaults. That theme cannot be vendored: it depends on Advocate, Concourse and Triplicate, which are licensed commercial webfonts and not redistributable. What replaces it is about a hundred lines of self-contained CSS in system fonts — **a substitute, not a reproduction of the original design.**
+
+The sidebar went with it. It was navigation into murdoch.is — publications, talks, teaching, social icons, a cover photo — none of which resolves here. A banner at the top now says what the page is instead. The two remaining site-relative links point at murdoch.is rather than 404ing.
+
+**Two chart defects were fixed**, both present in the published page. The annotation labels on the total-cases and rolling-7-day charts sat close to the left edge and were clipped by the canvas, reading "ases added" and "ases reviewed"; both now carry an `xAdjust`. And the chart control rows have an inline `display: flex` with no wrapping, so five buttons needing 547px made the page scroll sideways on a phone.
+
 ### Verified
 
-Rendered in headless Chrome from `file://`, with no network, and compared against the original page rendering with the CDN and GitHub Pages available. **The two screenshots are byte-identical** (`960a13a8…`, 1200×3200). The change is cosmetically null.
+The dependency changes were checked first, before any restyling: rendered in headless Chrome from `file://` with no network, and compared against the original page rendering with the CDN and GitHub Pages available. **The two screenshots were byte-identical** (`960a13a8…`, 1200×3200), so vendoring the libraries and inlining the data changed nothing visible.
+
+The restyling was then checked the same way — the page is complete and legible standing alone, all four charts draw, and the total-cases annotation is no longer clipped. Two things were *not* re-rendered afterwards, because headless Chrome stopped producing screenshots: the rolling-7-day annotation fix, which is the same plugin option on the same code path as the one that was checked, and the narrow-viewport layout, whose button-wrapping fix was verified by measurement (547px of buttons in a row) rather than by picture.
 
 ## Known limitations
 
-**It renders unstyled.** The page links `../../theme/css/combined-min.css` and `../../theme/js/combined-min.js`, paths relative to the website root, and pulls the header image and social icons from `../../images/` and `../../theme/images/`. None of those resolve here. The result is plain but complete and entirely readable — every chart, control and paragraph is present. The theme was deliberately not vendored: it is the website's, not this project's, and copying it would preserve someone else's CSS rather than this dataset.
-
-**Navigation links point at the website.** Sidebar links (`Publications`, `Talks`, and so on) are relative and will 404. They are left alone as part of the record of how the page was presented.
+**It does not look like the original.** The typography and layout are a substitute, for the licensing reason above. Anyone wanting the original appearance should consult the first commit of this file together with a capture of murdoch.is from the same period.
 
 **It is a snapshot of one moment.** If the page on murdoch.is is later updated to say the project concluded, this copy will not follow.
 
