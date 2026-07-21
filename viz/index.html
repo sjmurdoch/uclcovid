@@ -54,9 +54,15 @@
     </style>
 
     <script defer src="../../theme/js/combined-min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <!-- These three were loaded from cdn.jsdelivr.net. They are now stored in
+         js/, byte for byte as that CDN served them, so the page does not
+         depend on a CDN continuing to serve end-of-life versions. See
+         README.md for the original URLs and their checksums. -->
+    <script src="js/moment.min.js"></script>
+    <script src="js/Chart.js"></script>
+    <script src="js/chartjs-plugin-annotation.min.js"></script>
+    <!-- The data, formerly fetched at run time from GitHub Pages. -->
+    <script src="js/covid-data.js"></script>
 </head>
 
 <body>
@@ -244,8 +250,10 @@
 </div>
 
 <script>
-  //var dataURL = 'covid.json';
-  var dataURL = 'https://sjmurdoch.github.io/uclcovid/data/covid.json';
+  // The data used to be fetched at run time from
+  //   https://sjmurdoch.github.io/uclcovid/data/covid.json
+  // It is now loaded from js/covid-data.js, which sets window.dataSets and is
+  // a copy of ../data/covid.json. See the bottom of this script.
 
   var chartColors = {
     // From https://personal.sron.nl/~pault/#sec:qualitative
@@ -673,19 +681,17 @@
     chart.update();
   }
 
-  let request = new XMLHttpRequest();
-  request.open('GET', dataURL);
-  request.responseType = 'json';
-  request.send();
-  request.onload = function () {
+  // This was an XMLHttpRequest for dataURL, drawing the charts in its onload
+  // handler. A page opened from disk cannot fetch a file sitting next to it,
+  // so the data now arrives as a script and this waits for the document
+  // instead. window.dataSets is set by js/covid-data.js.
+  window.addEventListener('DOMContentLoaded', function () {
     let aspectRatio = window.innerWidth < 700 ? 1 : 1.5;
     if (aspectRatio > 1) {
       configTotal.options.annotation.annotations[0].label.enabled = true;
       //configWeekly.options.annotation.annotations[0].label.enabled = true;
       configRolling.options.annotation.annotations[0].label.enabled = true;
     }
-
-    dataSets = request.response;
 
     configDaily.data.datasets[0].data = parseData(window.dataSets, "staff.on");
     configDaily.data.datasets[1].data = parseData(window.dataSets, "staff.off");
@@ -813,7 +819,7 @@
       console.log('addEventListener - resize');
     }, true);
     */
-  };
+  });
 
 </script>
 
