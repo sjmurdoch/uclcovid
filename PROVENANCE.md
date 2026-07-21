@@ -22,7 +22,21 @@ MAILFROM=smurdoch
 
 `download.sh` fetched the page with `wget`, ran `exportdata.py` to parse it into the CSV and JSON files, then committed and pushed — one automatic commit per run, about 6,500 of them. Commit timestamps run roughly three minutes behind the snapshot filenames, which is the download and parse time.
 
-Snapshot counts per month are **not** a record of the schedule. Unchanged fetches were deduplicated away, so fewer snapshots in a month means UCL updated the page less often, not that the job ran less often.
+### What `data/original/` actually contains
+
+Not one copy of each distinct page. `exportdata.py` compared each fetch against **only the immediately preceding one**, moving it aside if the bytes matched, so what survived is *fetches that differed from their predecessor*. Content that recurred non-adjacently was kept, and a great deal did:
+
+| | |
+|---|---|
+| Files | 6,140 |
+| Distinct contents among them | **3,066** |
+| Files sharing content with another file in the directory | **3,990 (65%)** |
+
+The page alternated between states rather than simply changing. On 5–6 April 2022, ten byte-identical fetches survive with different pages interleaved between them; the adjacent-only check could not see past its one-file window.
+
+So **snapshot counts are not a record of the schedule, and not a count of page updates either.** Fewer files in a month does mean UCL was changing the page less often, but the count overstates the number of changes, because an A→B→A oscillation is counted twice. `manifest-sha256.txt.gz` is what records the polling itself.
+
+Only sixteen adjacent duplicates escaped the move. Fifteen fall inside a single run of sixteen zero-length files during the December 2020 outage — the emptiness test returns before the hash test, so empty files were never eligible to be moved at all. The sixteenth is `covid-2022-07-29T11-34-03.html`, the last snapshot in the collection, byte-identical to the fetch before it because the cron line was commented out before `exportdata.py` ran again. **It is the one fetch that was never processed**, and it is kept: what a snapshot records is that the page was fetched at that moment, which is unique to it whatever the bytes say.
 
 **The earliest snapshots were collected elsewhere.** The first substantive command in the account was:
 

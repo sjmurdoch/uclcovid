@@ -86,6 +86,8 @@ The CSV and JSON files are an interpretation of UCL's web page. `data/original/`
 
 Neither affects the published CSV and JSON, which are keyed by the date UCL reported, not by fetch time.
 
+**Do not count snapshots to measure how often UCL updated the page.** The collection was thinned by comparing each fetch against only the one before it, so `data/original/` holds fetches that differed from their predecessor — not distinct pages. The 6,140 files have just **3,066 distinct contents** between them, and 3,990 of them are byte-identical to some other file in the directory, because the page alternated between states rather than simply changing. Counting files overstates the number of updates.
+
 **24 of the 6,140 snapshots (0.4%) cannot be parsed**, and are listed on stderr at the end of every run. Nineteen are zero-length, from times when UCL's site was failing, mostly during a 17-hour outage on 17–18 December 2020. The rest are from 27–29 July 2022, when the page was restructured as it was decommissioned. No data is lost: the hourly cadence means an adjacent snapshot covers the same period.
 
 The newsletters in `data/updates/` are stored as **raw email HTML** — roughly 42 KB of email-service template around perhaps 2 KB of text, with no plain-text extraction performed. Their images are referenced remotely and were not captured, so they will break as those hosts age. `data/updates/manifest.csv` records the source URL of each one, which the filenames do not.

@@ -73,7 +73,7 @@ Pushing to GitHub fails inside the sandbox (`nc: authentication method negotiati
 
 - **Europe/London local time, not UTC** — an hour is missing at each spring forward and repeats at each autumn back.
 - **Not unique keys.** Two files genuinely share `covid-2020-10-25T01-34-01.html` with different content. Compare content hashes; never merge snapshot directories by name.
-- **Snapshot counts are not the polling record.** Unchanged fetches were deduplicated away and deleted during archival; `manifest-sha256.txt.gz` is what records every fetch, including the 7,890 removed ones, and is the only evidence of collection frequency.
+- **`data/original/` is not a deduplicated set**, despite appearances. The live scraper compared each fetch against only the immediately preceding one, so the 6,140 surviving files hold just **3,066 distinct contents**; 65% are byte-identical to some other file in the same directory. Counting them measures neither the schedule nor the number of page updates. `manifest-sha256.txt.gz` is the polling record — every fetch, including the 7,890 removed during archival.
 
 ## Documentation structure
 
