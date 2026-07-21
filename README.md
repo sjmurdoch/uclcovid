@@ -85,9 +85,8 @@ The JSON is served at [`https://sjmurdoch.github.io/uclcovid/data/covid.json`](h
 | `code/snapshot_to_csv.py` | The archival parser: same output, no side effects, survives bad input |
 | `code/fetch_updates.py` | Downloads the newsletters and records where each came from |
 | `code/parse-data.ipynb` | Notebook comparing reported weekly figures against a rolling 7-day sum — the analysis behind the 79-case discrepancy above |
-| `code/experiments/rust/` | An abandoned attempt to reimplement the parser in Rust. Never reached parity |
 
-A `rust` branch also exists, unmerged and left that way. It holds a 22 MB profiling artefact with no symbols to interpret it against; the source worth keeping was copied to `code/experiments/rust/`.
+An unmerged `rust` branch also exists, holding an abandoned attempt to reimplement the parser in Rust. It never reached parity with the Python, produced none of the published data, and is not needed to understand or reproduce anything here. It is left in place rather than deleted, but deliberately kept off `main`.
 
 ## Licence
 
