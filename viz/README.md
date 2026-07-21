@@ -50,11 +50,9 @@ The sidebar went with it. It was navigation into murdoch.is — publications, ta
 
 ### Verified
 
-The dependency changes were checked first, before any restyling: rendered in headless Chrome from `file://` with no network, and compared against the original page rendering with the CDN and GitHub Pages available. **The two screenshots were byte-identical** (`960a13a8…`, 1200×3200), so vendoring the libraries and inlining the data changed nothing visible.
+The dependency changes were checked before any restyling: rendered in headless Chrome from `file://` with no network, and compared against the original page rendering with the CDN and GitHub Pages available. **The two screenshots were byte-identical** (`960a13a8…`, 1200×3200), so vendoring the libraries and inlining the data changed nothing visible. The restyling was then checked the same way — all four charts and their controls, the text, both annotation labels reading in full, and no horizontal overflow at 500px.
 
-The restyling was then checked the same way, end to end: banner, contents, all four charts with their controls, the discussion, and the footer all render complete and consistent. Both annotation labels read in full rather than clipped, and there is no horizontal overflow at 500px, the narrowest viewport this headless build allows.
-
-One trap worth recording for anyone repeating this. Chart.js is still animating when the page finishes loading, so a screenshot taken then catches the lines partway up and the totals chart appears to stop short of its final value. Setting `Chart.defaults.global.animation.duration = 0` in a throwaway copy gives the settled page; the totals then reach 1350 / 1239 / 3279 / 1614, which is both what the DOM reports and what UCL froze at on 12 May 2022.
+One trap worth recording for anyone repeating this: Chart.js is still animating when the page finishes loading, so a screenshot taken then catches the lines partway up and the totals chart appears to stop short. Setting `Chart.defaults.global.animation.duration = 0` in a throwaway copy gives the settled page, whose totals reach 1350 / 1239 / 3279 / 1614 — what the DOM reports, and what UCL froze at on 12 May 2022.
 
 ## Known limitations
 

@@ -5,7 +5,7 @@
 ## made, and the data is published as UCL reported it.
 ##
 ## The "was it converted to float64?" question those notes also raised is
-## answered in ../PRESERVATION.md: dropping the dtype changes nothing.
+## answered in ../PROVENANCE.md: dropping the dtype changes nothing.
 
 import argparse
 import os

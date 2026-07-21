@@ -2,7 +2,7 @@
 
 **This project has concluded.** Between October 2020 and May 2022 UCL published statistics of COVID-19 cases among its staff and students on a web page that was overwritten with each update, keeping no history. This repository collected that page hourly and extracted the numbers, so the series could be read as a whole rather than a day at a time.
 
-UCL's page recorded its "final update Thursday 12 May 2022" and was decommissioned that July. **The published data therefore runs 2020-10-09 to 2022-05-11**, and the snapshots run to 2022-07-29 — the scraper carried on fetching an unchanging page for two and a half months after the numbers stopped moving.
+UCL's page recorded its "final update Thursday 12 May 2022" and was decommissioned that July. **The published data therefore runs 2020-10-09 to 2022-05-11**, ending with cumulative totals of 1350 staff on campus, 1239 staff off campus, 3279 students on campus and 1614 students off campus. The snapshots run to 2022-07-29 — the scraper carried on fetching an unchanging page for two and a half months after the numbers stopped moving.
 
 The original page is gone: its URL now redirects to a general campus-safety page. The [Internet Archive's capture of 28 January 2022](https://web.archive.org/web/20220128023651/https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-potential-cases/current-confirmed-cases-covid-19) shows what was being read.
 
@@ -17,10 +17,11 @@ The original page is gone: its URL now redirects to a general campus-safety page
 | `manifest-sha256.txt.gz` | SHA-256 of every snapshot ever fetched, including 7,890 deduplicated ones no longer stored |
 | `code/` | The scraper, the archival re-implementation, and the newsletter fetcher |
 | `viz/` | The interactive charts from murdoch.is, self-contained — open `viz/index.html` |
-| [`PRESERVATION.md`](PRESERVATION.md) | What the archive can be shown to do, and where it falls short |
-| [`PROVENANCE.md`](PROVENANCE.md) | How the data was produced, on a machine that no longer exists |
+| [`PROVENANCE.md`](PROVENANCE.md) | Where the data came from, what was discarded, and what was verified |
 
 The newsletters are worth knowing about. They begin seven months before the case statistics and record the decisions behind the numbers, which the statistics alone do not explain.
+
+This README is meant to be enough to use the data. `PROVENANCE.md` is for checking it.
 
 ## The data
 
@@ -45,8 +46,8 @@ Four groups of four series, each covering staff (on campus), staff (off campus),
 - **Reported weekly totals disagree with a rolling 7-day sum of daily cases before November 2020.** 79 cases with incomplete information were incorrectly carried forward in the weekly figures. UCL resolved this as of 4 November 2020; daily and total figures were unaffected. This is why the `*rolling7*` series exist, and why the published charts use them for the earlier period. **The two do not agree perfectly afterwards either** — see below.
 - **A day UCL never refreshed: 2021-03-31.** The page served on Wednesday 31 March 2021 was identical to the previous day's, and there is a row for that date in the data — so this looks like a day with no cases rather than a day with no figures. It is the latter. The staff on-campus total then rises from 190 to 193 on 1 April, and the weekly figure reports 3, but no day's cases ever account for them. **Three staff on-campus cases exist only in the totals.** Never corrected.
 - **A week UCL never published: Easter 2022.** There are weekly rows for 2022-03-30, 2022-04-06, 2022-04-20 and 2022-04-27, but none for 2022-04-13. The 41 staff on-campus cases reported on 2022-04-20 as "new cases in last 7 days" in fact cover the **14 days** from 6 April; the other three series are affected the same way. Totals reconcile across the gap, so nothing is lost from them, but that week's weekly figures understate the period they appear to describe. Never corrected.
-- **A 50-hour hole in the snapshots**, 2021-08-21 to 2021-08-23, from a machine failure that also corrupted the git repository. No published data was lost; see [`PROVENANCE.md`](PROVENANCE.md).
-- **`data/original-tables.html` is truncated**, missing its closing tags, because the run that produced it aborted partway. See [`PRESERVATION.md`](PRESERVATION.md).
+- **A 50-hour hole in the snapshots**, 2021-08-21 to 2021-08-23, from a machine failure that also corrupted the git repository. No published data was lost — the gap fell across a weekend, when UCL was not publishing, and the totals reconcile across it. But anyone reasoning from *fetch* times rather than reported dates should know about it. See [`PROVENANCE.md`](PROVENANCE.md).
+- **`data/original-tables.html` is truncated**, missing its closing `</body></html>`. This is not a transcription error: the run that produced it aborted at the first unparseable snapshot before reaching the line that writes the closing tags, and regenerating it reproduces the truncation byte for byte. A properly regenerated version is 14 bytes longer and so will not match the copy served from GitHub Pages.
 
 ### Comparing weekly against daily figures
 
@@ -75,6 +76,20 @@ The remaining differences are of the order of one to six cases and scattered thi
 
 This is also why the weekly chart on the [project page](https://murdoch.is/projects/covid/) switches from the recalculated series to UCL's reported weekly figures at 2021-01-05 — the first publication day after that 18-day Christmas break. **The comparison is only meaningful within a teaching term.** After 2022-03-02, when publication became weekly, it does not apply at all.
 
+## Using the primary sources
+
+The CSV and JSON files are an interpretation of UCL's web page. `data/original/` is the evidence, and is there so that anyone who disagrees with the interpretation can go back to it. Three things about it are not obvious.
+
+**Snapshot filenames are Europe/London local time, not UTC.** They come from `date '+%Y-%m-%dT%H-%M-%S'` on the machine that fetched them, so an hour goes missing at each spring forward and repeats at each autumn back. All four UK clock changes fall inside the collection period.
+
+**Snapshot filenames are therefore not unique keys.** Two files in the collection genuinely share a name with different content, from the October 2020 clock change — see [`PROVENANCE.md`](PROVENANCE.md). Compare content hashes, and do not merge snapshot directories by name.
+
+Neither affects the published CSV and JSON, which are keyed by the date UCL reported, not by fetch time.
+
+**24 of the 6,140 snapshots (0.4%) cannot be parsed**, and are listed on stderr at the end of every run. Nineteen are zero-length, from times when UCL's site was failing, mostly during a 17-hour outage on 17–18 December 2020. The rest are from 27–29 July 2022, when the page was restructured as it was decommissioned. No data is lost: the hourly cadence means an adjacent snapshot covers the same period.
+
+The newsletters in `data/updates/` are stored as **raw email HTML** — roughly 42 KB of email-service template around perhaps 2 KB of text, with no plain-text extraction performed. Their images are referenced remotely and were not captured, so they will break as those hosts age. `data/updates/manifest.csv` records the source URL of each one, which the filenames do not.
+
 The file formats were never guaranteed stable, and are now frozen by the project having ended.
 
 ## Reproducing and verifying
@@ -86,7 +101,7 @@ cd code
 python snapshot_to_csv.py --snapshots ../data/original --data /tmp/out
 ```
 
-This produces `covid.csv`, `covid.json`, `covid_raw.csv` and `covid_raw.json` byte-identical to those in `data/`, which has been checked rather than assumed. It takes about 90 seconds and lists unparseable snapshots on stderr at the end. Paths may also be given as `UCLCOVID_SNAPSHOTS` and `UCLCOVID_DATA`; the command line wins.
+This produces `covid.csv`, `covid.json`, `covid_raw.csv` and `covid_raw.json` byte-identical to those in `data/` — checked rather than assumed, against both the published files and the original live scraper, as recorded in [`PROVENANCE.md`](PROVENANCE.md). It takes about 90 seconds and lists unparseable snapshots on stderr at the end. Paths may also be given as `UCLCOVID_SNAPSHOTS` and `UCLCOVID_DATA`; the command line wins.
 
 The snapshots themselves can be checked against the manifest:
 
@@ -96,9 +111,9 @@ gzcat manifest-sha256.txt.gz | grep ' data/original/' | shasum -a 256 -c --quiet
 
 The manifest's other half describes deduplicated files deleted during archival and will report as missing. That is expected.
 
-**Do not run `code/exportdata.py` against this archive.** It is the original live scraper, kept for the record, and it *moves* snapshots into a `duplicates/` directory as a side effect of parsing them. Use `snapshot_to_csv.py`.
+**Do not run `code/exportdata.py` against this archive.** It is the original live scraper, kept for the record, and it *moves* any snapshot whose content matches the previous one into a `duplicates/` directory as a side effect of parsing. This is not theoretical: during verification on a scratch copy it moved `covid-2022-07-29T11-34-03.html`, the last snapshot in the collection, out of `data/original/`. It also calls `sys.exit(1)` on a mismatched table label, which raises `SystemExit` and so bypasses ordinary exception handling. Use `snapshot_to_csv.py`.
 
-The code needs pandas 1.5.x; `iteritems()` was removed in pandas 2.0. The pins in `code/requirements.txt` date from 2020 and no longer build.
+**The code needs pandas 1.5.x.** `iteritems()` was removed in pandas 2.0 and `line_terminator` was renamed in 1.5, so a current pandas will not run this without small changes to `to_json` and `export`. The pins in `code/requirements.txt` date from 2020 and no longer build; the verification was done with Python 3.11, pandas 1.5.3, numpy 1.26.4 and BeautifulSoup 4.
 
 ## Access over HTTPS
 
@@ -113,7 +128,7 @@ The JSON is served at [`https://sjmurdoch.github.io/uclcovid/data/covid.json`](h
 | `code/snapshot_to_csv.py` | The archival parser: same output, no side effects, survives bad input |
 | `code/fetch_updates.py` | Downloads the newsletters and records where each came from |
 
-An unmerged `rust` branch also exists, holding an abandoned attempt to reimplement the parser in Rust. It never reached parity with the Python, produced none of the published data, and is not needed to understand or reproduce anything here. It is left in place rather than deleted, but deliberately kept off `main`.
+An unmerged `rust` branch also exists, holding an abandoned attempt to reimplement the parser in Rust. It produced none of the published data and is not needed to understand or reproduce anything here; it is kept off `main` deliberately, for the reasons in [`PROVENANCE.md`](PROVENANCE.md).
 
 ## Licence
 
