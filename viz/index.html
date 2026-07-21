@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professor Steven J. Murdoch">
+
+        <link rel="alternate" href="https://murdoch.is/blog/feeds/all.atom.xml" type="application/atom+xml" title="Professor Steven J. Murdoch (Atom feed)"/>
+
+        <title>COVID-19 // Professor Steven J. Murdoch</title>
+        <link rel="me" href="https://mastodon.social/@sjmurdoch">
+
+    <link rel="stylesheet" href="../../theme/css/combined-min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="../../theme/css/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="../../theme/css/grids-responsive-min.css">
+    <!--<![endif]-->
+    <style>
+      canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+      button {
+        margin: 0.5ex;
+        -webkit-appearance: none;
+      }
+      .pure-alert {
+        position: relative;
+        margin-bottom: 1em;
+        padding: 1em;
+        background: #ccc;
+        border-radius: 3px;
+      }
+      .pure-alert label {
+          display: inline-block;
+          *display: inline;
+          /* IE7 inline-block hack */
+          *zoom: 1;
+          white-space: nowrap;
+      }
+
+      .pure-alert {
+          background-color: rgb(209, 235, 238);
+          color: rgb(44, 56, 61);
+      }
+
+      .pure-alert-warning {
+        background-color: rgb(250, 191, 103);
+        color: rgb(151, 96, 13);
+      }
+    </style>
+
+    <script defer src="../../theme/js/combined-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@0.5.7/chartjs-plugin-annotation.min.js"></script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+<div class="sidebar pure-u">
+    <div class="cover-img" style="background-image: url('../../images/cover.jpg')">
+        <div class="cover-body">
+            <header class="header">
+                  <h1 class="brand-main"><a href="../..">Professor Steven J. Murdoch</a></h1>
+                  <p class="links"><a href="../../papers/">Publications</a>
+                    &bull; <a href="../../talks/">Talks</a>
+                    </p>
+                  <p class="links"><a href="../../teaching/">Teaching</a> &bull;
+                    <a href="../../projects/">Projects</a></p>
+                  <p class="links"><a href="https://www.benthamsgaze.org/">Bentham’s Gaze</a> &bull;
+                  <a href="../../#contact">Contact</a></p>
+                  <p class="social">
+                      <a href="https://twitter.com/sjmurdoch">
+                          <img src="../../theme/images/trans.png" class="sl-twitter-square sl" title="Twitter" alt="Twitter">
+                      </a>
+                      <a href="https://github.com/sjmurdoch">
+                          <img src="../../theme/images/trans.png" class="sl-github-square sl" title="GitHub" alt="GitHub">
+                      </a>
+                      <a href="https://www.flickr.com/photos/sjmurdoch/">
+                          <img src="../../theme/images/trans.png" class="sl-flickr sl" title="Flickr" alt="Flickr">
+                      </a>
+                      <a href="https://murdoch.is/blog/feeds/all.atom.xml">
+                          <img src="../../theme/images/trans.png" class="sl-rss-square sl" title="Atom feed" alt="Atom feed">
+                           <br />
+                      </a>
+                      <a href="https://uk.linkedin.com/in/sjmurdoch">
+                          <img src="../../theme/images/trans.png" class="sl-linkedin-square sl" title="LinkedIn" alt="LinkedIn">
+                      </a>
+                      <a href="https://www.youtube.com/channel/UCqoZew_jxvMaXoQLbYPLvYA">
+                          <img src="../../theme/images/trans.png" class="sl-youtube-square sl" title="YouTube" alt="YouTube">
+                      </a>
+                      <a href="https://scholar.google.co.uk/citations?user=vlPUYJEAAAAJ">
+                          <img src="../../theme/images/trans.png" class="sl-google-scholar-square sl" title="Google Scholar" alt="Google Scholar">
+                      </a>
+                      <a href="https://500px.com/StevenMurdoch">
+                          <img src="../../theme/images/trans.png" class="sl-500px sl" title="500px" alt="500px">
+                      </a>
+                  </p>
+            </header>
+        </div>
+    </div>
+</div>    <div class="pure-u-1">
+        <div class="content">
+            <h1 class="content-subhead">COVID-19</h1>
+
+            <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-2-3">
+
+            <div class="pure-alert">If you are using these graphs or the historical data I've made available (e.g. for analysis, planning, making reports, personal usage, curiosity, etc.), I would greatly appreciate
+            if you could drop me a quick email to <a href="mailto:s.murdoch@ucl.ac.uk">s.murdoch@ucl.ac.uk</a> so I can better understand what this service is used for.</div>
+
+            <p>Between October 2020 and May 2022, UCL published
+              <a href="https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-potential-cases/current-confirmed-cases-covid-19">statistics</a>
+              of COVID-19 cases for UCL staff
+              and students. This page shows data for the full period,
+              so as to better understand any trends present.</p>
+            <p>Before 2022-03-02, data was published during weekdays, with cases from Saturday to Monday being merged into the results reported on Tuesday.
+              Daily cases reported on Tuesday are shown as being shared equally over Saturday, Sunday, and Monday to avoid a misleading weekly peak.
+              Weekly and total cases don't need such smoothing, so data for Saturday and Sunday are simply omitted.
+              From 2022-03-02 onwards, data was published weekly and so daily cases are calculated by sharing the weekly case count over the applicable seven days.
+              Similarly, cases reported over vacations are smoothed over the applicable period.
+              See the <a href="https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-cases/current-confirmed-cases-covid-19">official UCL website</a>
+              for important caveats on how this data should be interpreted. Analysis code and historical data is on <a href="https://github.com/sjmurdoch/uclcovid">GitHub</a>.</p>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+              <ul style="list-style-type: none; border-width: 1px; margin: 20px; padding: 10px 20px 10px 20px; background: #f5f5ff none
+              repeat scroll 0% 0%;border-style:solid;font-family: &quot;Advocate Wide&quot;,sans-serif;">
+                <li style="padding-bottom: 5px;">Contents</li>
+                <li><a href="#weekly">Weekly cases</a></li>
+                <li><a href="#daily">Daily cases</a></li>
+                <li><a href="#total">Total cases</a></li>
+                <li><a href="#discussion">Discussion</a></li>
+              </ul>
+            </div>
+            </div>
+
+            <h2 id="weekly">Weekly case statistics</h2>
+            <div style="width:100%;font-feature-settings:normal;-moz-font-feature-settings:normal;-webkit-font-feature-settings:normal;">
+              <canvas id="canvasWeekly"></canvas>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="weeklyStudents">Only students</button>
+              <button id="weeklyStaff">Only staff</button>
+              <button id="weeklyOn">Only on campus</button>
+              <button id="weeklyOff">Only off campus</button>
+              <button id="weeklyReset">Show all</button>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="weeklyLast">Only 2021/22</button>
+              <button id="weeklyAll">Full period</button>
+            </div>
+            <p>Before 2021-01-05 this graph is based on a rolling 7-day total of the daily reported cases, rather than the reported weekly statistics.
+              See <a href="#discussion-weekly">the discussion below</a> for the reason for this change.</p>
+
+            <h2 id="daily">Daily case statistics</h2>
+            <div style="width:100%;font-feature-settings:normal;-moz-font-feature-settings:normal;-webkit-font-feature-settings:normal;">
+              <canvas id="canvasDaily"></canvas>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="dailyStudents">Only students</button>
+              <button id="dailyStaff">Only staff</button>
+              <button id="dailyOn">Only on campus</button>
+              <button id="dailyOff">Only off campus</button>
+              <button id="dailyReset">Show all</button>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="dailyLast">Only 2021/22</button>
+              <button id="dailyAll">Full period</button>
+            </div>
+            <p>&nbsp;</p>
+
+            <h2 id="total">Total cases since start of Term 1
+            </h2>
+            <div style="width:100%;font-feature-settings:normal;-moz-font-feature-settings:normal;-webkit-font-feature-settings:normal;">
+              <canvas id="canvasTotal"></canvas>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="totalStudents">Only students</button>
+              <button id="totalStaff">Only staff</button>
+              <button id="totalOn">Only on campus</button>
+              <button id="totalOff">Only off campus</button>
+              <button id="totalReset">Show all</button>
+            </div>
+            <div style="display: flex; justify-content: center;">
+              <button id="totalLast">Only 2021/22</button>
+              <button id="totalAll">Full period</button>
+            </div>
+            <p>* On 26 October 2020, an <a href="https://twitter.com/sjmurdoch/status/1321148555722215424">additional 89 cases</a>
+              were added to the total that were not previously included in daily or weekly statistics.</p>
+
+            <h2 id="discussion">Discussion</h2>
+            <p>The above charts report the data as published by UCL. The only adjustments I have made are to smooth the
+              data covering the weekend and Monday over the three days in question, such that a misleading peak on Tuesday
+              is prevented, and to re-calculate the weekly statistics (see below why). I have avoided drawing any
+              conclusions or predictions from this data, though I welcome those more qualified to do so to use <a
+                href="https://github.com/sjmurdoch/uclcovid">the data</a> as they wish. However, there are some aspects of
+              the data which might not be obvious. In this section, I will, therefore discuss some of these findings in
+              the hope that it will assist those in interpreting the data. Please do get <a href="/#contact">in
+                contact</a> if you have any comments or questions.</p>
+              <h3 id="discussion-campus">Definition of on-campus cases</h3>
+              <p>The definition of an on-campus case for the purposes of these statistics is &ldquo;those who have
+                visited UCL buildings, spending 15 minutes or more, in the two days before starting experiencing
+                symptoms or requesting a test.&rdquo; This is very similar to the criteria used by the <a
+                  href="https://www.gov.uk/guidance/nhs-test-and-trace-how-it-works#what-we-will-ask-you">UK Test and
+                  Trace system</a> for identifying cases of potential onward transmission (forward-tracing). However, this
+                  definition of &ldquo;on-campus&rdquo; isn&lsquo;t suitable for identifying the source of an infection
+                (backwards-tracing), because it generally takes
+                <a
+                  href="https://www.uptodate.com/contents/coronavirus-disease-2019-covid-19-clinical-features?sectionName=Risk%20factors%20for%20severe%20illness&topicRef=126981&anchor=H2249070035&source=see_link#H2222473005">four
+                  to five days</a> from exposure to the start of symptoms. For this reason, the on/off-campus
+                definition is not a reliable indication of whether an infection occurred on-campus, nor particularly
+                helpful for <a
+                  href="https://www.theatlantic.com/health/archive/2020/09/k-overlooked-variable-driving-pandemic/616548/">identifying
+                  clusters of infection</a>.</p>
+              <h3 id="discussion-weekly">Relationship between daily, weekly and total figures</h3>
+            <p>The case statistics published include a daily, weekly and total (since the start of term 1). These are
+              obviously related, e.g. subtracting consecutive totals should give the daily number of cases. As of 14
+              November, this is indeed the case, other than the additional 89 cases published on 26 October.</p>
+            <p>A rolling 7-day total of the daily number of cases should also give the weekly totals. However, in the
+              published data, this is not the case. In the chart below, the reported weekly totals for student cases are
+              shown, along with a rolling 7-day total of the daily number of cases. As can be seen, the reported on-campus
+              weekly totals tend to be larger than the rolling 7-day total. Off-campus student cases also exhibit a
+              similar discrepancy, but there the calculated total is larger than the reported total.</p>
+            <p>The reason for this discrepancy is that 79 cases were incorrectly carried forward in the 7-day totals
+              because they had incomplete information. As of 4 November, this issue has been resolved. The issue also did
+              not affect the daily or overall case totals. To more accurately represent the statistics before the
+              correction, the weekly graph shown above (before 2021-01-05) is calculated from the daily statistics, rather than using the
+              reported weekly statistics.</p>
+            <div style="width:100%;font-feature-settings:normal;-moz-font-feature-settings:normal;-webkit-font-feature-settings:normal;">
+              <canvas id="canvasRolling"></canvas>
+            </div>
+            <h3 id="discussion-uncertainty">Uncertainty in the true number of cases</h3>
+            <p>The reported statistics only cover cases where UCL has been made aware of a positive COVID-19 test result. For this to have happened, someone would need to have symptoms, try and succeed to get tested, and report the result to UCL. If any of these steps don&rsquo;t occur, a positive case would not be present in the published statistics.</p>
+            <p>UCL does not carry out testing of staff or students without symptoms. The University of Cambridge does and, as of 1 November 2020, about <a href="https://www.cam.ac.uk/coronavirus/stay-safe-cambridge-uni/data-from-covid-19-testing-service">a third of positive cases</a> were identified through this asymptomatic testing programme. It&rsquo;s not clear how many of these cases would have become symptomatic, and it&rsquo;s not clear how Cambridge&rsquo;s example generalises, but it does seem likely that some asymptomatic cases are being missed in the UCL statistics.</p>
+            <p>Not all individuals with symptoms will choose to get tested, and some who try will not be able to get a test, although UCL does offer its own testing programme <a href="https://www.ucl.ac.uk/coronavirus/testing-reporting-and-managing-potential-cases/ucl-coronavirus-testing">for eligible staff and students</a>. Therefore some symptomatic cases of COVID-19 will not be identified through testing.</p>
+            <p>Even those individuals who receive a positive test result may not all report their result to UCL. On 27 October there was a <a href="https://twitter.com/sjmurdoch/status/1321148555722215424">one-off addition of 89 cases</a> to the total, which were mainly students who received positive test results, did not notify UCL, but were identified because they used UCL&rsquo;s testing service. I&rsquo;ve also heard anecdotes of students not wanting to report cases to UCL. It&rsquo;s not clear how many other instances there are of positive results not being reported.</p>
+            <p>For all these reasons, it&rsquo;s clear that the statistics are an underestimate of the true number of cases, but it&rsquo;s not clear (to me) by how much. Do <a href="/#contact">get in touch</a> if you have any good ideas on how to estimate the level of uncertainty.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+  //var dataURL = 'covid.json';
+  var dataURL = 'https://sjmurdoch.github.io/uclcovid/data/covid.json';
+
+  var chartColors = {
+    // From https://personal.sron.nl/~pault/#sec:qualitative
+    rose: '#CC6677',
+    indigo: '#332288',
+    sand: '#DDCC77',
+    green: '#117733',
+    cyan: '#88CCEE',
+    wine: '#882255',
+    teal: '#44AA99',
+    olive: '#999933',
+    purple: '#AA4499',
+    grey: '#DDDDDD'
+  };
+
+  var color = Chart.helpers.color;
+  Chart.defaults.global.defaultFontFamily = 'sans-serif';
+  Chart.defaults.global.elements.line.cubicInterpolationMode = 'monotone'
+  var configDaily = {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'Staff (on campus)',
+        backgroundColor: color(chartColors.cyan).alpha(0.5).rgbString(),
+        borderColor: chartColors.cyan,
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'Staff (off campus)',
+        backgroundColor: color(chartColors.green).alpha(0.5).rgbString(),
+        borderColor: chartColors.green,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (on campus)',
+        backgroundColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        borderColor: chartColors.rose,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (off campus)',
+        backgroundColor: color(chartColors.sand).alpha(0.5).rgbString(),
+        borderColor: chartColors.sand,
+        fill: false,
+        data: [],
+      }]
+    },
+    options: {
+      aspectRatio: 1.5,
+      title: {
+        text: 'Daily reported cases for UCL staff and students',
+        display: true,
+      },
+      legend: {
+        position: 'bottom'
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'YYYY-MM-DD',
+            round: 'day',
+            tooltipFormat: 'YYYY-MM-DD',
+            unit: 'day',
+            displayFormats: {
+              day: 'DD MMM'
+            }
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Date'
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Cases (last 24h)'
+          },
+          ticks: {
+            suggestedMin: 0
+          }
+        }]
+      },
+    }
+  };
+
+  var configWeekly = {
+    type: 'line',
+    data: {
+      cubicInterpolationMode: 'monotone',
+      datasets: [{
+        label: 'Staff (on campus)',
+        backgroundColor: color(chartColors.cyan).alpha(0.5).rgbString(),
+        borderColor: chartColors.cyan,
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'Staff (off campus)',
+        backgroundColor: color(chartColors.green).alpha(0.5).rgbString(),
+        borderColor: chartColors.green,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (on campus)',
+        backgroundColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        borderColor: chartColors.rose,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (off campus)',
+        backgroundColor: color(chartColors.sand).alpha(0.5).rgbString(),
+        borderColor: chartColors.sand,
+        fill: false,
+        data: [],
+      }]
+    },
+    options: {
+      aspectRatio: 1.5,
+      title: {
+        text: 'Weekly reported cases for UCL staff and students',
+        display: true,
+      },
+      legend: {
+        position: 'bottom'
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'YYYY-MM-DD',
+            round: 'day',
+            tooltipFormat: 'YYYY-MM-DD',
+            unit: 'day',
+            displayFormats: {
+              day: 'DD MMM'
+            }
+          },
+          ticks: {
+            //max: moment('20210104', 'YYYYMMDD'),
+            min: moment('20201009', 'YYYYMMDD')
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Date'
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Cases (last 7d)'
+          },
+          ticks: {
+            suggestedMin: 0
+          }
+        }]
+      },
+      /*onResize: function(chart, size) {
+            //chart.annotation.annotations[0].label.enabled = size.width > 200
+            //chart.options.aspectRatio = size.width <= 700 ? 1 : 1.5;
+            chart.annotation.elements['vline'].options.label.enabled = size.width > 700;
+            //chart.options.annotation.annotations[0].label.enabled = size.width > 700;
+            chart.update();
+            //console.log('addEventListener - chart');
+      },
+      annotation: {
+        drawTime: 'afterDatasetsDraw',
+        annotations: [
+          {
+            id: 'vline',
+            type: 'line',
+            mode: 'vertical',
+            scaleID: 'x-axis-0',
+            value: moment('20201104', 'YYYYMMDD'),
+            borderColor: color(chartColors.wine).alpha(0.5).rgbString(),
+            borderWidth: 2,
+            borderDash: [1, 1],
+            label: {
+              backgroundColor: color(chartColors.wine).rgbString(),
+              content: "Cases reviewed*",
+              enabled: false,
+            },
+          }]
+      }*/
+    }
+  };
+
+  var configTotal = {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'Staff (on campus)',
+        backgroundColor: color(chartColors.cyan).alpha(0.5).rgbString(),
+        borderColor: chartColors.cyan,
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'Staff (off campus)',
+        backgroundColor: color(chartColors.green).alpha(0.5).rgbString(),
+        borderColor: chartColors.green,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (on campus)',
+        backgroundColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        borderColor: chartColors.rose,
+        fill: false,
+        data: [],
+      }, {
+        label: 'Students (off campus)',
+        backgroundColor: color(chartColors.sand).alpha(0.5).rgbString(),
+        borderColor: chartColors.sand,
+        fill: false,
+        data: [],
+      }]
+    },
+    options: {
+      aspectRatio: 1.5,
+      title: {
+        text: 'Total reported cases for UCL staff and students',
+        display: true,
+      },
+      legend: {
+        position: 'bottom'
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'YYYY-MM-DD',
+            round: 'day',
+            tooltipFormat: 'YYYY-MM-DD',
+            unit: 'day',
+            displayFormats: {
+              day: 'DD MMM'
+            }
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Date'
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Cases since 28 Sep'
+          },
+          ticks: {
+            suggestedMin: 0
+          }
+        }]
+      },
+      onResize: function(chart, size) {
+            //chart.annotation.annotations[0].label.enabled = size.width > 200
+            //chart.options.aspectRatio = size.width <= 700 ? 1 : 1.5;
+            chart.annotation.elements['vline'].options.label.enabled = size.width > 700;
+            //chart.options.annotation.annotations[0].label.enabled = size.width > 700;
+            chart.update();
+            //console.log('addEventListener - chart');
+      },
+      annotation: {
+        drawTime: 'afterDatasetsDraw',
+        annotations: [
+          {
+            id: 'vline',
+            type: 'line',
+            mode: 'vertical',
+            scaleID: 'x-axis-0',
+            value: moment('20201026', 'YYYYMMDD'),
+            borderColor: color(chartColors.wine).alpha(0.5).rgbString(),
+            borderWidth: 2,
+            borderDash: [1, 1],
+            label: {
+              backgroundColor: color(chartColors.wine).rgbString(),
+              content: "Cases added*",
+              enabled: false,
+            },
+          }]
+      }
+    }
+  };
+
+  var configRolling = {
+    type: 'line',
+    data: {
+      cubicInterpolationMode: 'monotone',
+      datasets: [{
+        label: 'On-campus (reported)',
+        backgroundColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        borderColor: chartColors.rose,
+        borderDash: [4,4],
+        pointRadius: 0,
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'On-campus (calculated)',
+        backgroundColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        borderColor: color(chartColors.rose).alpha(0.5).rgbString(),
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'Off-campus (reported)',
+        backgroundColor: color(chartColors.purple).alpha(0.5).rgbString(),
+        borderColor: chartColors.purple,
+        borderDash: [4,4],
+        pointRadius: 0,
+        fill: false,
+        data: [],
+      },
+      {
+        label: 'Off-campus (calculated)',
+        backgroundColor: color(chartColors.purple).alpha(0.5).rgbString(),
+        borderColor: color(chartColors.purple).alpha(0.5).rgbString(),
+        fill: false,
+        data: [],
+      }]
+    },
+    options: {
+      aspectRatio: 1.5,
+      title: {
+        text: 'Cases for UCL students (7-day total)',
+        display: true,
+      },
+      legend: {
+        position: 'bottom'
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'YYYY-MM-DD',
+            round: 'day',
+            tooltipFormat: 'YYYY-MM-DD',
+            unit: 'day',
+            displayFormats: {
+              day: 'DD MMM'
+            }
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Date'
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Cases (last 7d)'
+          },
+          ticks: {
+            suggestedMin: 0
+          }
+        }]
+      },
+      onResize: function(chart, size) {
+            //chart.annotation.annotations[0].label.enabled = size.width > 200
+            //chart.options.aspectRatio = size.width <= 700 ? 1 : 1.5;
+            chart.annotation.elements['vline'].options.label.enabled = size.width > 700;
+            //chart.options.annotation.annotations[0].label.enabled = size.width > 700;
+            chart.update();
+            //console.log('addEventListener - chart');
+      },
+      annotation: {
+        drawTime: 'afterDatasetsDraw',
+        annotations: [
+          {
+            id: 'vline',
+            type: 'line',
+            mode: 'vertical',
+            scaleID: 'x-axis-0',
+            value: moment('20201104', 'YYYYMMDD'),
+            borderColor: color(chartColors.wine).alpha(0.5).rgbString(),
+            borderWidth: 2,
+            borderDash: [1, 1],
+            label: {
+              backgroundColor: color(chartColors.wine).rgbString(),
+              content: "Cases reviewed",
+              enabled: false,
+            },
+          }]
+      }
+    }
+  };
+
+  function parseData(dataSets, dataSetName, altDataSetName = null) {
+    data = []
+    if (altDataSetName == null) {
+      for (let [d, c] of dataSets[dataSetName]) {
+        data.push({ x: d, y: c });
+      }
+    } else {
+      for (let [d, c] of dataSets[dataSetName]) {
+        if (d < "2021-01-05")
+          data.push({ x: d, y: c });
+      }
+      for (let [d, c] of dataSets[altDataSetName]) {
+        if (d >= "2021-01-05")
+          data.push({ x: d, y: c });
+      }
+    }
+    return data
+  }
+
+  function enableDatasets(indiciesEnabled, indiciesDisabled, config, chart) {
+    for (i=0; i<indiciesEnabled.length; i++) {
+      config.data.datasets[indiciesEnabled[i]].hidden = false;
+    }
+
+    for (i=0; i<indiciesDisabled.length; i++) {
+      config.data.datasets[indiciesDisabled[i]].hidden = true;
+    }
+
+    chart.update();
+  }
+
+  function setMinimum(allData, config, chart) {
+    if (allData) {
+      config.options.scales.xAxes[0].ticks.min=moment('20201009', 'YYYYMMDD');
+    } else {
+      config.options.scales.xAxes[0].ticks.min=moment('20210927', 'YYYYMMDD');
+    }
+    chart.update();
+  }
+
+  let request = new XMLHttpRequest();
+  request.open('GET', dataURL);
+  request.responseType = 'json';
+  request.send();
+  request.onload = function () {
+    let aspectRatio = window.innerWidth < 700 ? 1 : 1.5;
+    if (aspectRatio > 1) {
+      configTotal.options.annotation.annotations[0].label.enabled = true;
+      //configWeekly.options.annotation.annotations[0].label.enabled = true;
+      configRolling.options.annotation.annotations[0].label.enabled = true;
+    }
+
+    dataSets = request.response;
+
+    configDaily.data.datasets[0].data = parseData(window.dataSets, "staff.on");
+    configDaily.data.datasets[1].data = parseData(window.dataSets, "staff.off");
+    configDaily.data.datasets[2].data = parseData(window.dataSets, "student.on");
+    configDaily.data.datasets[3].data = parseData(window.dataSets, "student.off");
+    configDaily.options.aspectRatio = aspectRatio;
+    var ctx = document.getElementById('canvasDaily').getContext('2d');
+    window.covidDaily = new Chart(ctx, configDaily);
+
+    configWeekly.data.datasets[0].data = parseData(window.dataSets, "staffrolling7.on", "staff7.on");
+    configWeekly.data.datasets[1].data = parseData(window.dataSets, "staffrolling7.off", "staff7.off");
+    configWeekly.data.datasets[2].data = parseData(window.dataSets, "studentrolling7.on", "student7.on");
+    configWeekly.data.datasets[3].data = parseData(window.dataSets, "studentrolling7.off", "student7.off");
+    configWeekly.options.aspectRatio = aspectRatio;
+    var ctx = document.getElementById('canvasWeekly').getContext('2d');
+    window.covidWeekly = new Chart(ctx, configWeekly);
+
+    configTotal.data.datasets[0].data = parseData(window.dataSets, "stafftotal.on");
+    configTotal.data.datasets[1].data = parseData(window.dataSets, "stafftotal.off");
+    configTotal.data.datasets[2].data = parseData(window.dataSets, "studenttotal.on");
+    configTotal.data.datasets[3].data = parseData(window.dataSets, "studenttotal.off");
+    configTotal.options.aspectRatio = aspectRatio;
+    var ctx = document.getElementById('canvasTotal').getContext('2d');
+    window.covidTotal = new Chart(ctx, configTotal);
+
+    /*
+    configRolling.data.datasets[0].data = parseData(window.dataSets, "staffrolling7.on");
+    configRolling.data.datasets[1].data = parseData(window.dataSets, "staffrolling7.off");
+    configRolling.data.datasets[2].data = parseData(window.dataSets, "studentrolling7.on");
+    configRolling.data.datasets[3].data = parseData(window.dataSets, "studentrolling7.off");
+    configRolling.options.aspectRatio = aspectRatio;
+    var ctx = document.getElementById('canvasRolling').getContext('2d');
+    window.covidRolling = new Chart(ctx, configRolling);
+    */
+
+    configRolling.data.datasets[0].data = parseData(window.dataSets, "student7.on");
+    configRolling.data.datasets[1].data = parseData(window.dataSets, "studentrolling7.on");
+    configRolling.data.datasets[2].data = parseData(window.dataSets, "student7.off");
+    configRolling.data.datasets[3].data = parseData(window.dataSets, "studentrolling7.off");
+    configRolling.options.aspectRatio = aspectRatio;
+    var ctx = document.getElementById('canvasRolling').getContext('2d');
+    window.covidRolling = new Chart(ctx, configRolling);
+
+    document.getElementById('dailyStudents').addEventListener('click', function() {
+      enableDatasets([2,3], [0,1], configDaily, window.covidDaily);
+		});
+    document.getElementById('dailyStaff').addEventListener('click', function() {
+      enableDatasets([0,1], [2,3], configDaily, window.covidDaily);
+		});
+    document.getElementById('dailyOn').addEventListener('click', function() {
+      enableDatasets([0,2], [1,3], configDaily, window.covidDaily);
+		});
+    document.getElementById('dailyOff').addEventListener('click', function() {
+      enableDatasets([1,3], [0,2], configDaily, window.covidDaily);
+		});
+    document.getElementById('dailyReset').addEventListener('click', function() {
+      enableDatasets([0,1,2,3], [], configDaily, window.covidDaily);
+		});
+
+    document.getElementById('weeklyStudents').addEventListener('click', function() {
+      enableDatasets([2,3], [0,1], configWeekly, window.covidWeekly);
+		});
+    document.getElementById('weeklyStaff').addEventListener('click', function() {
+      enableDatasets([0,1], [2,3], configWeekly, window.covidWeekly);
+		});
+    document.getElementById('weeklyOn').addEventListener('click', function() {
+      enableDatasets([0,2], [1,3], configWeekly, window.covidWeekly);
+		});
+    document.getElementById('weeklyOff').addEventListener('click', function() {
+      enableDatasets([1,3], [0,2], configWeekly, window.covidWeekly);
+		});
+    document.getElementById('weeklyReset').addEventListener('click', function() {
+      enableDatasets([0,1,2,3], [], configWeekly, window.covidWeekly);
+		});
+
+    document.getElementById('totalStudents').addEventListener('click', function() {
+      enableDatasets([2,3], [0,1], configTotal, window.covidTotal);
+		});
+    document.getElementById('totalStaff').addEventListener('click', function() {
+      enableDatasets([0,1], [2,3], configTotal, window.covidTotal);
+		});
+    document.getElementById('totalOn').addEventListener('click', function() {
+      enableDatasets([0,2], [1,3], configTotal, window.covidTotal);
+		});
+    document.getElementById('totalOff').addEventListener('click', function() {
+      enableDatasets([1,3], [0,2], configTotal, window.covidTotal);
+		});
+    document.getElementById('totalReset').addEventListener('click', function() {
+      enableDatasets([0,1,2,3], [], configTotal, window.covidTotal);
+		});
+
+    document.getElementById('weeklyAll').addEventListener('click', function() {
+      setMinimum(true, configWeekly, window.covidWeekly);
+    });
+    document.getElementById('weeklyLast').addEventListener('click', function() {
+      setMinimum(false, configWeekly, window.covidWeekly);
+    });
+    document.getElementById('dailyAll').addEventListener('click', function() {
+      setMinimum(true, configDaily, window.covidDaily);
+    });
+    document.getElementById('dailyLast').addEventListener('click', function() {
+      setMinimum(false, configDaily, window.covidDaily);
+    });
+    document.getElementById('totalAll').addEventListener('click', function() {
+      setMinimum(true, configTotal, window.covidTotal);
+    });
+    document.getElementById('totalLast').addEventListener('click', function() {
+      setMinimum(false, configTotal, window.covidTotal);
+    });
+
+    /*
+    window.addEventListener("resize", function(){
+      let aspectRatio = window.innerWidth < 700 ? 1 : 1.5;
+      if (aspectRatio > 1) {
+        configTotal.options.annotation.annotations[0].label.enabled = true;
+      }
+      configDaily.options.aspectRatio = aspectRatio;
+      configWeekly.options.aspectRatio = aspectRatio;
+      configTotal.options.aspectRatio = aspectRatio;
+      configRolling.options.aspectRatio = aspectRatio;
+      window.covidDaily.update(0);
+      window.covidWeekly.update(0);
+      window.covidTotal.update(0);
+      window.covidRolling.update(0);
+      console.log('addEventListener - resize');
+    }, true);
+    */
+  };
+
+</script>
+
+<footer class="footer">
+        <!-- Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a> -->
+</footer><div><a href="#" class="go-top"><i class="sl-chevron-up sl"></i></a></div></body>
+</html>
