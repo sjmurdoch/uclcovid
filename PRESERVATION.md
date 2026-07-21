@@ -83,7 +83,46 @@ The archival tool skips **24** snapshots; the live scraper reports only **4** pa
 
 **The newsletters are stored as raw email HTML**, roughly 42 KB of email-service template around perhaps 2 KB of text. Images are referenced remotely and were not captured, so they will break as those hosts age. No plain-text extraction was performed.
 
-**One filename is ambiguous.** `covid-2020-10-25T01-34-01.html` exists in both the retained and deduplicated sets with different content: 25 October 2020 was the UK clock change, so 01:34 occurred twice and the second fetch reused the first filename. Snapshot filenames are therefore not a unique key.
+**One filename is ambiguous.** See the next section — snapshot filenames are not a unique key.
+
+## Timestamps, and the one duplicated filename
+
+Snapshots are named from `date '+%Y-%m-%dT%H-%M-%S'` on the machine that fetched them, which ran on **Europe/London local time, not UTC**. The archive shows this directly: local hours go missing at each spring forward and repeat at each autumn back. That makes the filenames ambiguous twice a year, and in one case actively collide.
+
+All four UK clock changes fell inside the collection period:
+
+| Date | | What happened |
+|---|---|---|
+| 2020-10-25 | back | 01:34 occurred twice. **Both fetches produced `covid-2020-10-25T01-34-01.html`** — see below |
+| 2021-03-28 | forward | No 01:34 snapshot exists; that local hour never happened. Harmless |
+| 2021-10-31 | back | 01:34 occurred twice, but the fetches took 2 and 3 seconds, giving `01-34-02` and `01-34-03`. Distinct names, both preserved |
+| 2022-03-27 | forward | No 01:34 snapshot. Harmless |
+
+### Why the 2020 collision did not lose data
+
+Two files share the name `covid-2020-10-25T01-34-01.html` with different content. `wget -O` truncates its target, so the second fetch should simply have overwritten the first. It did not, because of an interaction with the deduplication step. Reconstructed from the manifest:
+
+| SHA-256 | Path |
+|---|---|
+| `ef1093cb…` | `data/duplicates/covid-2020-10-25T00-34-01.html` |
+| `ef1093cb…` | `data/duplicates/covid-2020-10-25T01-34-01.html` |
+| `64b58820…` | `data/original/covid-2020-10-25T01-34-01.html` |
+| `ef1093cb…` | `data/original/covid-2020-10-25T02-34-01.html` |
+
+1. **01:34 BST** — fetched, content `ef1093cb`, written to `data/original/`.
+2. `exportdata.py` ran, found it identical to the 00:34 snapshot, and **moved it to `data/duplicates/`**.
+3. **01:34 GMT**, an hour later by the clock but the same local time — fetched, content `64b58820`, written to the now-vacant `data/original/` filename.
+4. `exportdata.py` ran, found it differed, and kept it.
+
+The first copy survived only because the dedup step had moved it out of the way seconds earlier. **Had it not been a duplicate, it would have stayed in `data/original/` and been silently overwritten** — no error, no trace, one snapshot gone. The archive escaped that by luck rather than design, and the same luck held in 2021 only because two fetches happened to take different numbers of seconds.
+
+This is the **only** duplicated filename in the collection, confirmed across all 14,030 manifest entries. Since `data/duplicates/` was deleted during archival, `manifest-sha256.txt.gz` is now the sole record that the collision occurred.
+
+### What this means for using the archive
+
+- **Do not treat snapshot filenames as unique identifiers**, and do not merge snapshot directories by name. Compare content hashes.
+- **Do not parse filenames as UTC.** They are Europe/London local time, so an hour is missing each spring and repeated each autumn.
+- Neither affects the published CSV/JSON, which are keyed by the date UCL reported, not by fetch time.
 
 ## A resolved question
 
