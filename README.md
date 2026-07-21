@@ -42,10 +42,37 @@ Four groups of four series, each covering staff (on campus), staff (off campus),
 ### Things that will otherwise look like errors
 
 - **A jump of 89 cases on 2020-10-26.** A one-off addition of cases identified through UCL's own testing service that had not been reported to UCL. It appears in the totals but not in any day's reported cases, so consecutive totals do not difference to the daily figure across it.
-- **Reported weekly totals disagree with a rolling 7-day sum of daily cases before November 2020.** 79 cases with incomplete information were incorrectly carried forward in the weekly figures. UCL resolved this as of 4 November 2020; daily and total figures were unaffected. This is why the `*rolling7*` series exist, and why the published charts use them for the earlier period.
+- **Reported weekly totals disagree with a rolling 7-day sum of daily cases before November 2020.** 79 cases with incomplete information were incorrectly carried forward in the weekly figures. UCL resolved this as of 4 November 2020; daily and total figures were unaffected. This is why the `*rolling7*` series exist, and why the published charts use them for the earlier period. **The two do not agree perfectly afterwards either** — see below.
 - **Two gaps UCL never corrected.** No figures were published for 2021-03-31 — apparently 3 staff on-campus cases — and data missing over Easter 2022 was never restored.
 - **A 50-hour hole in the snapshots**, 2021-08-21 to 2021-08-23, from a machine failure that also corrupted the git repository. No published data was lost; see [`PROVENANCE.md`](PROVENANCE.md).
 - **`data/original-tables.html` is truncated**, missing its closing tags, because the run that produced it aborted partway. See [`PRESERVATION.md`](PRESERVATION.md).
+
+### Comparing weekly against daily figures
+
+Since a week's cases should equal the sum of that week's daily cases, the two published series can be checked against each other. Doing so is how the 79-case problem above was found, and anyone re-examining this data is likely to try it, so it is worth setting out what the comparison does and does not show.
+
+**Sum five rows, not seven.** Until 2022-03-02 nothing was published at weekends, so the daily series has five rows per week. A seven-row window spans nine calendar days and will not match anything.
+
+```python
+import pandas as pd
+df = pd.read_csv("data/covid_raw.csv", index_col="date", parse_dates=True)
+daily  = ["staff.on", "staff.off", "student.on", "student.off"]
+weekly = ["staff7.on", "staff7.off", "student7.on", "student7.off"]
+rolling = df[daily].rolling(5).sum().dropna()
+residual = df.loc[rolling.index, weekly].sub(rolling.values)
+```
+
+Against `covid_raw.csv`, that comparison gives a residual of zero on most days from 4 November 2020 onwards, confirming UCL's fix. It is **not** zero everywhere: 68 of the 308 days to 1 March 2022 differ. Almost all of the large ones are an artefact of the method rather than a fault in the data, because a five-row window spanning a vacation covers far more than seven days. The three worst clusters sit immediately after the three longest breaks in publication:
+
+| Break in publication | Residual that follows |
+|---|---|
+| 18 days, 2020-12-17 → 2021-01-04 | up to −27 per series, 5–8 January |
+| 13 days, 2021-12-21 → 2022-01-03 | up to −507 for students on campus, 3–7 January |
+| Half term, February 2022 | up to −27, 18–23 February |
+
+The remaining differences are of the order of one to six cases and scattered thinly.
+
+This is also why the weekly chart on the [project page](https://murdoch.is/projects/covid/) switches from the recalculated series to UCL's reported weekly figures at 2021-01-05 — the first publication day after that 18-day Christmas break. **The comparison is only meaningful within a teaching term.** After 2022-03-02, when publication became weekly, it does not apply at all.
 
 The file formats were never guaranteed stable, and are now frozen by the project having ended.
 
@@ -84,7 +111,6 @@ The JSON is served at [`https://sjmurdoch.github.io/uclcovid/data/covid.json`](h
 | `code/exportdata.py` | The live parser that produced all published data. Read it, do not run it |
 | `code/snapshot_to_csv.py` | The archival parser: same output, no side effects, survives bad input |
 | `code/fetch_updates.py` | Downloads the newsletters and records where each came from |
-| `code/parse-data.ipynb` | Notebook comparing reported weekly figures against a rolling 7-day sum — the analysis behind the 79-case discrepancy above |
 
 An unmerged `rust` branch also exists, holding an abandoned attempt to reimplement the parser in Rust. It never reached parity with the Python, produced none of the published data, and is not needed to understand or reproduce anything here. It is left in place rather than deleted, but deliberately kept off `main`.
 
