@@ -21,6 +21,22 @@ A dataset that outlives its author's attention needs four things. These were the
 
 **The published data is reproducible, and this was verified rather than assumed.** See below.
 
+## What was removed, and on what evidence
+
+Archival in July 2026 reduced the working copy from **1.5 GB to 283 MB**. Since most of that was deletion, the reasoning is recorded here rather than left to be inferred from an absence.
+
+**7,890 deduplicated snapshots were deleted** — 698 MB across two copies of the same tree, one extracted from a `duplicates.tar.gz` made in May 2022. Every file in them was byte-identical to one kept in `data/original/`: SHA-256 over both sides gave 1,395 distinct contents among the duplicates, 3,066 among the originals, and **zero** duplicate-side hashes absent from the original side.
+
+Their *filenames* were not redundant, though, and that is why `manifest-sha256.txt.gz` exists. Each name records an hour at which the page was fetched and found unchanged, so the set of names is the polling record — the only evidence of how often the page was checked against how often it actually changed. Deleting the tree without the manifest would have destroyed that. It has since earned its keep twice: it is what proves the 50-hour collection outage in August 2021 was real rather than an artefact of deduplication, and it is now the sole record of the one duplicated filename described below.
+
+The manifest was verified complete before anything was deleted — 7,890 + 6,140 = 14,030 entries, matching disk exactly, with `shasum -a 256 -c` returning exit 0 over all of them.
+
+**Also deleted:** a corrupted `.git` directory kept since the August 2021 incident (54 MB; `git fsck` showed empty objects and null-SHA refs, and every object still readable was already present in the live repository, including its HEAD commit `5cc745e8`); a Linux virtualenv (114 MB, unusable on any other platform, and `code/requirements.txt` holds the pins); a pip cache; a second full clone of this repository, confirmed byte-identical by `diff -rq`; and the deploy key, which was tested against GitHub, found already revoked, and destroyed.
+
+**Branches were consolidated.** A `preservation` branch carrying the newsletters and the first version of `snapshot_to_csv.py` was merged into `main` — 171 files, 28,389 insertions, **0 deletions** — verified contained in `main` before its remote branch was deleted. A `rust` branch holding an abandoned reimplementation is deliberately **retained and unmerged**: of the 24 MB it adds, about 4 KB is source, and the rest is a profiling artefact with no binary or symbols committed to interpret it against. The source worth keeping was copied to `code/experiments/rust/`.
+
+Nothing that was deleted is needed to reproduce any published figure, and nothing deleted was ever on GitHub except the `preservation` branch, whose commits were merged first.
+
 ## Verification
 
 Performed 2026-07-21 with Python 3.11, pandas 1.5.3, numpy 1.26.4 and BeautifulSoup 4. The pinned versions in `requirements.txt` are from 2020 and no longer build; 1.5.3 is the newest pandas confirmed to run this code.
