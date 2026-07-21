@@ -1,0 +1,36 @@
+{
+    "title": "Historical UCL COVID-19 statistics",
+    "upload_type": "dataset",
+    "access_right": "open",
+    "license": "Apache-2.0",
+    "creators": [
+        {
+            "name": "Murdoch, Steven J.",
+            "affiliation": "University College London",
+            "orcid": "0000-0002-8744-1575"
+        }
+    ],
+    "keywords": [
+        "COVID-19",
+        "SARS-CoV-2",
+        "pandemic",
+        "University College London",
+        "higher education",
+        "case statistics",
+        "web archiving",
+        "data preservation"
+    ],
+    "description": "<p>Between October 2020 and May 2022, University College London published statistics of COVID-19 cases among its staff and students on a web page that was overwritten with each update, keeping no history. This dataset is the result of a cron job that fetched that page hourly and extracted the numbers, so the series can be read as a whole rather than a day at a time. The original page has since been decommissioned and its URL redirected.</p><p><strong>The published data runs 2020-10-09 to 2022-05-11</strong> (UCL's stated \"final update Thursday 12 May 2022\"); the 6,140 hourly page snapshots run to 2022-07-29. The deposit also includes 168 UCL COVID-19 update newsletters (9 March 2020 – 4 May 2022), the scraper and an archival re-implementation of it, a SHA-256 manifest of every fetch, and a self-contained interactive visualisation.</p><p><strong>To interpret the data, read README.md; to check its provenance, read PROVENANCE.md.</strong> Both are in the archive. They document the smoothing applied, what \"on campus\" meant, two gaps UCL never corrected, and other features that would otherwise look like errors.</p><p><strong>Licensing is mixed.</strong> The code and the extracted data (the CSV and JSON files) are under the Apache License 2.0. The original UCL web pages in <code>data/original/</code> and the newsletters in <code>data/updates/</code> are <em>not</em> covered by it: they remain UCL's, reproduced here as the evidence behind the extracted figures. Zenodo records a single licence field, which reflects only the Apache-licensed portion.</p>",
+    "related_identifiers": [
+        {
+            "relation": "isDocumentedBy",
+            "identifier": "https://murdoch.is/projects/covid/",
+            "scheme": "url"
+        },
+        {
+            "relation": "isSupplementTo",
+            "identifier": "https://github.com/sjmurdoch/uclcovid",
+            "scheme": "url"
+        }
+    ]
+}
