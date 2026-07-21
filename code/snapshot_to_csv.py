@@ -3,6 +3,8 @@
 ## Still to correct mising data over Easter 2022
 ## TODO was it converted to float64?
 
+import argparse
+import os
 import sys
 import re
 import math
@@ -175,16 +177,20 @@ def parse_file(fh, file_datetime: datetime):
         if i in text_fields:
             cleaned = cleanup_value(tag, file_date, i)
             if cleaned != text_fields[i]:
-                sys.stderr.write("Expected {} got {} at date {} (original {})\n".format(text_fields[i], cleaned, file_date, tag))
-                sys.exit(1)
+                ## exportdata.py called sys.exit(1) here. That raises SystemExit,
+                ## which bypasses ordinary exception handling and aborts the whole
+                ## run over one malformed snapshot. Raise a normal exception so the
+                ## caller can record the file and carry on.
+                raise ValueError(
+                    "expected label {!r} but got {!r} (original {})".format(
+                        text_fields[i], cleaned, tag))
         elif i in data_fields:
             data[data_fields[i]] = int(cleanup_value(tag, file_date, i))
 
     return table, data
 
-def extract_df():
-    p = Path('../data')
-    snapshots = p / 'snapshots'
+def extract_df(data_dir: Path, snapshots: Path, skipped: list):
+    p = data_dir
     last_data = None
     ## File date of the last file read
     last_date = None
@@ -199,6 +205,7 @@ def extract_df():
 
         ## Skip empty files
         if file.stat().st_size == 0:
+            skipped.append((file.name, "empty file"))
             continue
 
         with file.open("rb") as fh:
@@ -212,9 +219,14 @@ def extract_df():
                 data_date = file_date - timedelta(days = 1)
             try:
                 table, data = parse_file(fh, file_datetime)
-            except:
-                print(f"error in {file_date} ({file})", file=sys.stderr)
-                raise
+            except Exception as e:
+                ## Unlike exportdata.py, which raised here, an archival tool must
+                ## survive defects in the archive it is reading. A snapshot can be
+                ## unparseable because UCL's site was erroring when it was fetched,
+                ## or because the page was restructured. Record and continue, so a
+                ## bad snapshot cannot truncate the whole dataset.
+                skipped.append((file.name, str(e) or type(e).__name__))
+                continue
 
         if data != last_data:
             ## Check if data has changed but file date has not
@@ -279,21 +291,21 @@ def to_json(df, jsonfile):
                 ds.append((d.strftime("%Y-%m-%d"), v))
     json.dump(datasets, jsonfile, sort_keys=True, indent=4)
 
-def export(df, df_smoothed):
+def export(df, df_smoothed, data_dir: Path):
     ## Export raw data to CSV
-    with open("../data/covid_raw.csv", "w", newline='') as csvfile:
+    with open(data_dir / "covid_raw.csv", "w", newline='') as csvfile:
         df.to_csv(csvfile, line_terminator="\r\n")
 
     ## Export raw data to JSON
-    with open("../data/covid_raw.json", "w", newline='') as jsonfile:
+    with open(data_dir / "covid_raw.json", "w", newline='') as jsonfile:
         to_json(df, jsonfile)
 
     ## Export smoothed data to CSV
-    with open("../data/covid.csv", "w", newline='') as csvfile:
+    with open(data_dir / "covid.csv", "w", newline='') as csvfile:
         df_smoothed.to_csv(csvfile, line_terminator="\r\n")
 
     ## Export smoothed data to JSON
-    with open("../data/covid.json", "w", newline='') as jsonfile:
+    with open(data_dir / "covid.json", "w", newline='') as jsonfile:
         to_json(df_smoothed, jsonfile)
 
 def add_weekend(df) -> pd.DataFrame:
@@ -349,8 +361,31 @@ def add_weekend(df) -> pd.DataFrame:
 def rolling_renamer(col: str) -> str:
     return col.replace(".", "rolling7.")
 
-def main():
-    df = extract_df()
+def parse_args(argv=None):
+    ## Settings may be given on the command line or in the environment, with the
+    ## command line taking precedence. Defaults match the layout of this repository.
+    parser = argparse.ArgumentParser(
+        description="Regenerate the published CSV/JSON tables from the archived snapshots.")
+    parser.add_argument(
+        "--snapshots", type=Path,
+        default=Path(os.environ.get("UCLCOVID_SNAPSHOTS", "../data/original")),
+        help="directory of covid-*.html snapshots (env: UCLCOVID_SNAPSHOTS)")
+    parser.add_argument(
+        "--data", type=Path, dest="data_dir",
+        default=Path(os.environ.get("UCLCOVID_DATA", "../data")),
+        help="directory to write covid.csv/json and original-tables.html into "
+             "(env: UCLCOVID_DATA)")
+    return parser.parse_args(argv)
+
+def main(argv=None):
+    args = parse_args(argv)
+
+    if not args.snapshots.is_dir():
+        sys.exit(f"No such snapshot directory: {args.snapshots}")
+    args.data_dir.mkdir(parents=True, exist_ok=True)
+
+    skipped: list = []
+    df = extract_df(args.data_dir, args.snapshots, skipped)
     df_smoothed = add_weekend(df)
 
     ## Compute and export rolling daily statistics
@@ -358,7 +393,14 @@ def main():
     rolling.rename(columns=rolling_renamer, inplace=True)
     df_rolling = pd.concat([df_smoothed, rolling], axis=1)
 
-    export(df, df_rolling)
+    export(df, df_rolling, args.data_dir)
+
+    ## Report snapshots that could not be parsed, so that a silent partial run is
+    ## never mistaken for a complete one.
+    if skipped:
+        print(f"\nSkipped {len(skipped)} unparseable snapshot(s):", file=sys.stderr)
+        for name, reason in skipped:
+            print(f"  {name}: {reason}", file=sys.stderr)
 
 
 if __name__=="__main__":
