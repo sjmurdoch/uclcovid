@@ -17,12 +17,20 @@ EXTRA_UPDATES = [
      "https://uclnews.org.uk/UAA-7U8DQ-C86EC44060C3E0D3H748FS5952AA4803060A4F/cr.aspx"),
 ]
 
-## Download content from a URL to a specified FILENAME 
+## Download content from a URL to a specified FILENAME.
+## Fetch first, and only replace the target once a good response is in hand.
+## Opening FILENAME for writing before the request would truncate any existing
+## archived copy, and every source URL here is now years old: a dead host or an
+## error page would then leave the newsletter empty or overwritten. So require a
+## 2xx response, write to a temporary sibling file, and rename it over the target
+## only on success -- a failed fetch leaves the existing file untouched.
 def download_to_file(url: str, filename: Path) -> None:
-    with open(filename, "wb") as fh:
-        r = requests.get(url)
-        text = r.content
-        fh.write(text)
+    r = requests.get(url, timeout=30)
+    r.raise_for_status()
+    tmp = filename.with_name(filename.name + ".part")
+    with open(tmp, "wb") as fh:
+        fh.write(r.content)
+    tmp.replace(filename)
 
 ## Given a <a> tag T, extract its URL
 def get_url_for_update(t: Tag) -> str:
