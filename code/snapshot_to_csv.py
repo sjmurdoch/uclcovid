@@ -213,15 +213,19 @@ def extract_df(data_dir: Path, snapshots: Path, skipped: list):
             continue
 
         with file.open("rb") as fh:
-            file_datetime = datetime.strptime(file.name, "covid-%Y-%m-%dT%H-%M-%S.html")
-            file_date = typing.cast(date, file_datetime.date())
-            if file_date.weekday() == 0:
-                ## Monday, data is correct as of Friday 5pm
-                data_date = file_date - timedelta(days = 3)
-            else:
-                ## other days, data is correct as of previous day at 5pm
-                data_date = file_date - timedelta(days = 1)
             try:
+                ## Parse the filename inside the try as well: a name matching the
+                ## glob but not this timestamp format (e.g. a stray covid-backup.html)
+                ## makes strptime raise, and that must be recorded and skipped like any
+                ## other bad input rather than aborting the whole run.
+                file_datetime = datetime.strptime(file.name, "covid-%Y-%m-%dT%H-%M-%S.html")
+                file_date = typing.cast(date, file_datetime.date())
+                if file_date.weekday() == 0:
+                    ## Monday, data is correct as of Friday 5pm
+                    data_date = file_date - timedelta(days = 3)
+                else:
+                    ## other days, data is correct as of previous day at 5pm
+                    data_date = file_date - timedelta(days = 1)
                 table, data = parse_file(fh, file_datetime)
             except Exception as e:
                 ## Unlike exportdata.py, which raised here, an archival tool must
